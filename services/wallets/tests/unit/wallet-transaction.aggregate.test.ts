@@ -20,3 +20,23 @@ describe("WalletTransaction.create", () => {
     expect(walletTransaction.id).toBeDefined();
   });
 });
+
+describe("WalletTransaction.reconstitute", () => {
+  it("reconstitui uma transação a partir de dados persistidos", () => {
+    const walletTransaction = WalletTransaction.reconstitute({
+      id: "transaction-id-fake",
+      walletId: "wallet-id-fake",
+      type: WalletTransactionType.DEBIT,
+      amount: Money.fromCents(500n),
+      betId: "bet-id-fake",
+      createdAt: new Date(),
+    });
+
+    expect(walletTransaction.id).toBe("transaction-id-fake");
+    expect(walletTransaction.walletId).toBe("wallet-id-fake");
+    expect(walletTransaction.type).toBe(WalletTransactionType.DEBIT);
+    expect(walletTransaction.amount.valueInCents).toBe(500n);
+    expect(walletTransaction.betId).toBe("bet-id-fake");
+    expect(walletTransaction.createdAt).toBeInstanceOf(Date);
+  });
+});

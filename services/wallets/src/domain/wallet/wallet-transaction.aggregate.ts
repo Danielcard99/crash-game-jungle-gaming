@@ -29,6 +29,24 @@ export class WalletTransaction {
     );
   }
 
+  static reconstitute(params: {
+    id: string;
+    walletId: string;
+    type: WalletTransactionType;
+    amount: Money;
+    betId: string;
+    createdAt: Date;
+  }) {
+    return new WalletTransaction(
+      params.id,
+      params.walletId,
+      params.type,
+      params.amount,
+      params.betId,
+      params.createdAt,
+    );
+  }
+
   get id() {
     return this._id;
   }
