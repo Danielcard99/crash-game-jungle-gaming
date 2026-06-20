@@ -1,4 +1,4 @@
-import { Money } from "../shared/money.value-object";
+import { Money } from "@crash/domain-kit";
 
 export class BetAmount {
   private static readonly MIN_CENTS = 100n; // R$1,00
