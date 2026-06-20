@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { Money } from "../../src/domain/shared/money.value-object";
+import { Money } from "../src/money.value-object";
 
 describe("Money.fromCents", () => {
   it("lança erro ao criar com valor negativo", () => {

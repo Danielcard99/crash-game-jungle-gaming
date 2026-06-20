@@ -13,7 +13,8 @@
     "@nestjs/core": "^11.1.17",
     "@nestjs/platform-express": "^11.1.17",
     "reflect-metadata": "^0.2.2",
-    "rxjs": "^7.8.2"
+    "rxjs": "^7.8.2",
+    "@crash/domain-kit": "workspace:*"
   },
   "devDependencies": {
     "bun-types": "latest",

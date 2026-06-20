@@ -1,4 +1,4 @@
-import { Money } from "../shared/money.value-object";
+import { Money } from "@crash/domain-kit";
 import { BetAmount } from "./bet-amount.value-object";
 import { BetStatus } from "./bet-status.enum";
 
