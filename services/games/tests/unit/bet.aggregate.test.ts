@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it } from "bun:test";
 import { Bet } from "../../src/domain/bet/bet.aggregate";
 import { BetStatus } from "../../src/domain/bet/bet-status.enum";
 import { BetAmount } from "../../src/domain/bet/bet-amount.value-object";
+import { Money } from "@crash/domain-kit";
 
 describe("Bet.create", () => {
   it("nasce em status PENDING", () => {
@@ -130,5 +131,26 @@ describe("Bet.markAsLost", () => {
     expect(() => bet.markAsLost()).toThrow(
       "Only bets in ACTIVE status can be marked as lost",
     );
+  });
+});
+
+describe("Bet.reconstitute", () => {
+  it("reconstitui uma aposta a partir de dados persistidos", () => {
+    const bet = Bet.reconstitute({
+      id: "bet-id-fake",
+      roundId: "round-id-fake",
+      playerId: "user-id-fake",
+      playerUsername: "player-username-fake",
+      amountBet: BetAmount.create(1000n),
+      status: BetStatus.CASHED_OUT,
+      cashoutMultiplier: 2.35,
+      payout: Money.fromCents(2350n),
+      placedAt: new Date(),
+      cashedOutAt: new Date(),
+    });
+
+    expect(bet.status).toBe(BetStatus.CASHED_OUT);
+    expect(bet.cashoutMultiplier).toBe(2.35);
+    expect(bet.payout?.valueInCents).toBe(2350n);
   });
 });
