@@ -1,0 +1,54 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Round {
+  id               String      @id @default(uuid())
+  status           RoundStatus
+  serverSeed       String
+  serverSeedHash   String
+  crashPoint       Decimal
+  bettingStartedAt DateTime
+  bettingEndsAt    DateTime
+  startedAt        DateTime?
+  crashedAt        DateTime?
+  settledAt        DateTime?
+  createdAt        DateTime    @default(now())
+  bets             Bet[]
+}
+
+enum RoundStatus {
+  BETTING
+  RUNNING
+  CRASHED
+  SETTLED
+}
+
+model Bet {
+  id                String    @id @default(uuid())
+  roundId           String
+  playerId          String
+  playerUsername    String
+  amountBet         Decimal
+  status            BetStatus
+  cashoutMultiplier Decimal?
+  payout            Decimal?
+  placedAt          DateTime
+  cashedOutAt       DateTime?
+  round             Round     @relation(fields: [roundId], references: [id])
+
+  @@index([playerId])
+}
+
+enum BetStatus {
+  PENDING
+  ACTIVE
+  CASHED_OUT
+  LOST
+  REJECTED
+}
