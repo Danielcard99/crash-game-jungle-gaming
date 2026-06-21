@@ -11,14 +11,18 @@ import {
 import { Bet } from "../../domain/bet/bet.aggregate";
 import { BetAmount } from "../../domain/bet/bet-amount.value-object";
 import { RoundStatus } from "../../domain/round/round-status.enum";
-import { BET_EVENTS, type BetPlacedEvent } from "@crash/rabbitmq-kit";
+import {
+  BET_EVENTS,
+  type EventPublisher,
+  type BetPlacedEvent,
+} from "@crash/rabbitmq-kit";
 
 @Injectable()
 export class PlaceBetUseCase {
   constructor(
     @Inject(ROUND_REPOSITORY) private readonly roundRepository: RoundRepository,
     @Inject(BET_REPOSITORY) private readonly betRepository: BetRepository,
-    @Inject("WALLETS_CLIENT") private readonly walletsClient: ClientProxy,
+    @Inject("WALLETS_CLIENT") private readonly walletsClient: EventPublisher,
   ) {}
 
   async execute(params: {

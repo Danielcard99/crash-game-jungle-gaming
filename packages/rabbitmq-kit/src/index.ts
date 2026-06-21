@@ -10,3 +10,4 @@ export {
   type BetRejectedEvent,
   type BetWonEvent,
 } from "./events/bet-events";
+export type { EventPublisher } from "./event-publisher";

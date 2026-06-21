@@ -8,6 +8,7 @@ import {
   type BetConfirmedEvent,
   type BetRejectedEvent,
   BetRejectionReason,
+  type EventPublisher,
 } from "@crash/rabbitmq-kit";
 import {
   WALLET_REPOSITORY,
@@ -27,7 +28,7 @@ export class ProcessBetPlacedUseCase {
     private readonly walletRepository: WalletRepository,
     @Inject(WALLET_TRANSACTION_REPOSITORY)
     private readonly walletTransactionRepository: WalletTransactionRepository,
-    @Inject("GAMES_CLIENT") private readonly gamesClient: ClientProxy,
+    @Inject("GAMES_CLIENT") private readonly gamesClient: EventPublisher,
   ) {}
 
   async execute(data: BetPlacedEvent): Promise<void> {

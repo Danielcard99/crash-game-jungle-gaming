@@ -5,13 +5,17 @@ import {
 } from "../../domain/bet/bet.repository";
 import { ClientProxy } from "@nestjs/microservices";
 import { Bet } from "../../domain/bet/bet.aggregate";
-import { BET_EVENTS, type BetWonEvent } from "@crash/rabbitmq-kit";
+import {
+  BET_EVENTS,
+  type EventPublisher,
+  type BetWonEvent,
+} from "@crash/rabbitmq-kit";
 
 @Injectable()
 export class CashOutUseCase {
   constructor(
     @Inject(BET_REPOSITORY) private readonly betRepository: BetRepository,
-    @Inject("WALLETS_CLIENT") private readonly walletsClient: ClientProxy,
+    @Inject("WALLETS_CLIENT") private readonly walletsClient: EventPublisher,
   ) {}
 
   async execute(params: {
