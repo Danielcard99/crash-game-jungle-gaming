@@ -41,6 +41,34 @@ export class Round {
     );
   }
 
+  static reconstitute(params: {
+    id: string;
+    status: RoundStatus;
+    serverSeed: string;
+    serverSeedHash: string;
+    crashPoint: number;
+    bettingStartedAt: Date;
+    bettingEndsAt: Date;
+    startedAt: Date | null;
+    crashedAt: Date | null;
+    settledAt: Date | null;
+    createdAt: Date;
+  }) {
+    return new Round(
+      params.id,
+      params.status,
+      params.serverSeed,
+      params.serverSeedHash,
+      params.crashPoint,
+      params.bettingStartedAt,
+      params.bettingEndsAt,
+      params.startedAt,
+      params.crashedAt,
+      params.settledAt,
+      params.createdAt,
+    );
+  }
+
   startRunning() {
     const initialStatus = this._status;
     const now = new Date();
@@ -79,5 +107,45 @@ export class Round {
 
   get status() {
     return this._status;
+  }
+
+  get id() {
+    return this._id;
+  }
+
+  get serverSeed() {
+    return this._serverSeed;
+  }
+
+  get serverSeedHash() {
+    return this._serverSeedHash;
+  }
+
+  get crashPoint() {
+    return this._crashPoint;
+  }
+
+  get bettingStartedAt() {
+    return this._bettingStartedAt;
+  }
+
+  get bettingEndsAt() {
+    return this._bettingEndsAt;
+  }
+
+  get startedAt() {
+    return this._startedAt;
+  }
+
+  get crashedAt() {
+    return this._crashedAt;
+  }
+
+  get settledAt() {
+    return this._settledAt;
+  }
+
+  get createdAt() {
+    return this._createdAt;
   }
 }

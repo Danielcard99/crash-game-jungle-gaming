@@ -87,3 +87,24 @@ describe("Round.settle", () => {
     expect(() => round.settle()).toThrow("status must be CRASHED to settle");
   });
 });
+
+describe("Round.reconstitute", () => {
+  it("reconstitui uma rodada a partir de dados persistidos", () => {
+    const round = Round.reconstitute({
+      id: "round-id-fake",
+      status: RoundStatus.CRASHED,
+      serverSeed: "seed-fake",
+      serverSeedHash: "hash-fake",
+      crashPoint: 2.35,
+      bettingStartedAt: new Date(),
+      bettingEndsAt: new Date(),
+      startedAt: new Date(),
+      crashedAt: new Date(),
+      settledAt: null,
+      createdAt: new Date(),
+    });
+
+    expect(round.status).toBe(RoundStatus.CRASHED);
+    expect(round.crashPoint).toBe(2.35);
+  });
+});

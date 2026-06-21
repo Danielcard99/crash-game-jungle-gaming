@@ -38,6 +38,32 @@ export class Bet {
     );
   }
 
+  static reconstitute(params: {
+    id: string;
+    roundId: string;
+    playerId: string;
+    playerUsername: string;
+    amountBet: BetAmount;
+    status: BetStatus;
+    cashoutMultiplier: number | null;
+    payout: Money | null;
+    placedAt: Date;
+    cashedOutAt: Date | null;
+  }) {
+    return new Bet(
+      params.id,
+      params.roundId,
+      params.playerId,
+      params.playerUsername,
+      params.amountBet,
+      params.status,
+      params.cashoutMultiplier,
+      params.payout,
+      params.placedAt,
+      params.cashedOutAt,
+    );
+  }
+
   confirm() {
     const status = this._status;
 
@@ -98,5 +124,29 @@ export class Bet {
 
   get payout() {
     return this._payout;
+  }
+
+  get id() {
+    return this._id;
+  }
+
+  get roundId() {
+    return this._roundId;
+  }
+
+  get playerId() {
+    return this._playerId;
+  }
+
+  get playerUsername() {
+    return this._playerUsername;
+  }
+
+  get placedAt() {
+    return this._placedAt;
+  }
+
+  get cashedOutAt() {
+    return this._cashedOutAt;
   }
 }

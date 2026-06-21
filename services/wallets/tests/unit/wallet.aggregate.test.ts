@@ -47,3 +47,21 @@ describe("Wallet.debit", () => {
     expect(wallet.version).toBe(1);
   });
 });
+
+describe("Wallet.reconstitute", () => {
+  it("reconstitui corretamente a partir de um estado", () => {
+    const wallet = Wallet.reconstitute({
+      id: "wallet-id-fake",
+      playerId: "user-id-fake",
+      balance: Money.fromCents(500n),
+      version: 3,
+    });
+
+    expect(wallet.id).toBe("wallet-id-fake");
+    expect(wallet.playerId).toBe("user-id-fake");
+    expect(wallet.balance.valueInCents).toBe(500n);
+    expect(wallet.version).toBe(3);
+  });
+});
+
+
