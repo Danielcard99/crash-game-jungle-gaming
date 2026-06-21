@@ -11,9 +11,11 @@
   "dependencies": {
     "@crash/domain-kit": "workspace:*",
     "@crash/rabbitmq-kit": "workspace:*",
+    "@crash/auth-kit": "workspace:*",
     "@nestjs/common": "^11.1.17",
     "@nestjs/core": "^11.1.17",
     "@nestjs/microservices": "^11.1.27",
+    "@nestjs/passport": "^11.0.5",
     "@nestjs/platform-express": "^11.1.17",
     "@prisma/adapter-pg": "^7.8.0",
     "@prisma/client": "^7.8.0",

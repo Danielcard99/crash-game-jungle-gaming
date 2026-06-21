@@ -7,10 +7,11 @@ import { BetEventsController } from "./presentation/controllers/bet-events.contr
 import { ProcessBetWonUseCase } from "./application/use-cases/process-bet-won.use-case";
 import { ProcessBetPlacedUseCase } from "./application/use-cases/process-bet-placed.use-case";
 import { CreateWalletUseCase } from "./application/use-cases/create-wallet.use-case";
+import { AuthModule } from "./infrastructure/auth/auth.module";
 
 @Module({
   controllers: [WalletsController, BetEventsController],
-  imports: [PrismaModule, RabbitMQModule, RepositoriesModule],
+  imports: [PrismaModule, RabbitMQModule, RepositoriesModule, AuthModule],
   providers: [
     ProcessBetPlacedUseCase,
     ProcessBetWonUseCase,
