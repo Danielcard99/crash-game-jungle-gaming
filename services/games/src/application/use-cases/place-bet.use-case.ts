@@ -1,5 +1,9 @@
-import { Injectable, Inject } from "@nestjs/common";
-import { ClientProxy } from "@nestjs/microservices";
+import {
+  Injectable,
+  Inject,
+  ServiceUnavailableException,
+  ConflictException,
+} from "@nestjs/common";
 import {
   ROUND_REPOSITORY,
   type RoundRepository,
@@ -26,34 +30,35 @@ export class PlaceBetUseCase {
   ) {}
 
   async execute(params: {
-    roundId: string;
     playerId: string;
     playerUsername: string;
     amountInCents: bigint;
   }): Promise<Bet> {
-    const round = await this.roundRepository.findById(params.roundId);
+    const round = await this.roundRepository.findCurrentBettingRound();
 
     if (!round) {
-      throw new Error("Round not found");
+      throw new ServiceUnavailableException(
+        "No round is currently accepting bets",
+      );
     }
 
     if (round.status !== RoundStatus.BETTING) {
-      throw new Error("Round is not in betting phase");
+      throw new ConflictException("Round is not in betting phase");
     }
 
     const existingBet = await this.betRepository.findByRoundIdAndPlayerId(
-      params.roundId,
+      round.id,
       params.playerId,
     );
 
     if (existingBet) {
-      throw new Error("Player already placed a bet in this round");
+      throw new ConflictException("Player already placed a bet in this round");
     }
 
     const amountBet = BetAmount.create(params.amountInCents);
 
     const bet = Bet.create({
-      roundId: params.roundId,
+      roundId: round.id,
       playerId: params.playerId,
       playerUsername: params.playerUsername,
       amountBet,

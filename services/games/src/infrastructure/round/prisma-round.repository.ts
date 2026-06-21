@@ -34,4 +34,13 @@ export class PrismaRoundRepository implements RoundRepository {
 
     return RoundMapper.toDomain(round);
   }
+
+  async findCurrentBettingRound(): Promise<Round | null> {
+    const round = await this.prisma.round.findFirst({
+      where: { status: "BETTING" },
+      orderBy: { createdAt: "desc" },
+    });
+
+    return round ? RoundMapper.toDomain(round) : null;
+  }
 }
