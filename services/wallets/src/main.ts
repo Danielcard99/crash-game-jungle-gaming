@@ -1,8 +1,9 @@
 import "reflect-metadata";
 import { NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module";
-import { MicroserviceOptions, Transport } from "@nestjs/microservices";
+import { MicroserviceOptions } from "@nestjs/microservices";
 import { createRabbitMQOptions } from "@crash/rabbitmq-kit";
+import { ZodValidationPipe } from "nestjs-zod";
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule);
@@ -18,6 +19,8 @@ async function bootstrap(): Promise<void> {
   );
 
   await app.startAllMicroservices();
+
+  app.useGlobalPipes(new ZodValidationPipe());
 
   const port = process.env.PORT;
   await app.listen(port, "0.0.0.0");
