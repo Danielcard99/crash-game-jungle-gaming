@@ -9,6 +9,6 @@
     "types": ["bun-types"],
     "baseUrl": "./"
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "tests/**/*"],
   "exclude": ["node_modules"]
 }
