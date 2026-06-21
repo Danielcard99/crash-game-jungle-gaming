@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
-import { WalletRepository } from "../../domain/wallet/wallet.repository";
+import { type WalletRepository } from "../../domain/wallet/wallet.repository";
 import { Wallet } from "../../domain/wallet/wallet.aggregate";
 import { WalletMapper } from "./wallet.mapper";
 

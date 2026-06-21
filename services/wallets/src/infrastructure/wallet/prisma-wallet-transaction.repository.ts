@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { WalletTransactionRepository } from "../../domain/wallet/wallet-transaction.repository";
+import { type WalletTransactionRepository } from "../../domain/wallet/wallet-transaction.repository";
 import { WalletTransactionType } from "../../domain/wallet/wallet-transaction-type.enum";
 import { WalletTransaction } from "../../domain/wallet/wallet-transaction.aggregate";
 import { PrismaService } from "../prisma/prisma.service";
