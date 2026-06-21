@@ -40,6 +40,12 @@ class FakeBetRepository implements BetRepository {
       ) ?? null
     );
   }
+
+  async findActiveBetsByRoundId(roundId: string): Promise<Bet[]> {
+    return this.bets.filter(
+      (b) => b.roundId === roundId && b.status === BetStatus.ACTIVE,
+    );
+  }
 }
 
 class FakeClientProxy implements EventPublisher {
@@ -51,10 +57,20 @@ class FakeClientProxy implements EventPublisher {
   }
 }
 
+class FakeEventEmitter2 {
+  public emittedEvents: { event: string; payload: unknown }[] = [];
+
+  emit(event: string, payload?: unknown) {
+    this.emittedEvents.push({ event, payload });
+    return true;
+  }
+}
+
 describe("CashOutUseCase", () => {
   it("saca a aposta e publica bet.won", async () => {
     const betRepository = new FakeBetRepository();
     const client = new FakeClientProxy();
+    const eventEmitter = new FakeEventEmitter2();
 
     const bet = Bet.create({
       roundId: "round-1",
@@ -65,7 +81,7 @@ describe("CashOutUseCase", () => {
     bet.confirm();
     await betRepository.save(bet);
 
-    const useCase = new CashOutUseCase(betRepository, client);
+    const useCase = new CashOutUseCase(betRepository, client, eventEmitter);
     const result = await useCase.execute({
       playerId: "player-1",
       currentMultiplier: 2.5,
@@ -74,12 +90,14 @@ describe("CashOutUseCase", () => {
     expect(result.status).toBe(BetStatus.CASHED_OUT);
     expect(client.emittedEvents[0].pattern).toBe(BET_EVENTS.WON);
     expect((client.emittedEvents[0].data as BetWonEvent).payout).toBe(2500);
+    expect(eventEmitter.emittedEvents[0].event).toBe("bet.cashedOut");
   });
 
   it("lança erro quando não há aposta ativa pro jogador", async () => {
     const betRepository = new FakeBetRepository();
     const client = new FakeClientProxy();
-    const useCase = new CashOutUseCase(betRepository, client);
+    const eventEmitter = new FakeEventEmitter2();
+    const useCase = new CashOutUseCase(betRepository, client, eventEmitter);
 
     await expect(
       useCase.execute({ playerId: "player-1", currentMultiplier: 2.0 }),

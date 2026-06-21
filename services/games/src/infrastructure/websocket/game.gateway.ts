@@ -37,4 +37,23 @@ export class GameGateway {
   }) {
     this.server.emit("round:crashed", payload);
   }
+
+  @OnEvent("bet.placed")
+  handleBetPlaced(payload: {
+    roundId: string;
+    playerUsername: string;
+    amountBet: number;
+  }) {
+    this.server.emit("bet:placed", payload);
+  }
+
+  @OnEvent("bet.cashedOut")
+  handleBetCashedOut(payload: {
+    roundId: string;
+    playerUsername: string;
+    payout: number;
+    cashoutMultiplier: number;
+  }) {
+    this.server.emit("bet:cashedOut", payload);
+  }
 }

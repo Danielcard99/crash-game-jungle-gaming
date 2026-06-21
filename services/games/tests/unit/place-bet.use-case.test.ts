@@ -49,6 +49,20 @@ class FakeBetRepository implements BetRepository {
       null
     );
   }
+
+  async findActiveBetByPlayerId(playerId: string): Promise<Bet | null> {
+    return (
+      this.bets.find(
+        (b) => b.playerId === playerId && b.status === BetStatus.ACTIVE,
+      ) ?? null
+    );
+  }
+
+  async findActiveBetsByRoundId(roundId: string): Promise<Bet[]> {
+    return this.bets.filter(
+      (b) => b.roundId === roundId && b.status === BetStatus.ACTIVE,
+    );
+  }
 }
 
 class FakeClientProxy implements EventPublisher {
@@ -57,6 +71,15 @@ class FakeClientProxy implements EventPublisher {
   emit(pattern: string, data: unknown) {
     this.emittedEvents.push({ pattern, data });
     return { subscribe: () => {} };
+  }
+}
+
+class FakeEventEmitter2 {
+  public emittedEvents: { event: string; payload: unknown }[] = [];
+
+  emit(event: string, payload?: unknown) {
+    this.emittedEvents.push({ event, payload });
+    return true;
   }
 }
 
@@ -74,11 +97,17 @@ describe("PlaceBetUseCase", () => {
     const roundRepository = new FakeRoundRepository();
     const betRepository = new FakeBetRepository();
     const client = new FakeClientProxy();
+    const eventEmitter = new FakeEventEmitter2();
 
     const round = createBettingRound();
     await roundRepository.save(round);
 
-    const useCase = new PlaceBetUseCase(roundRepository, betRepository, client);
+    const useCase = new PlaceBetUseCase(
+      roundRepository,
+      betRepository,
+      client,
+      eventEmitter,
+    );
 
     const bet = await useCase.execute({
       playerId: "player-1",
@@ -88,14 +117,21 @@ describe("PlaceBetUseCase", () => {
 
     expect(bet.status).toBe(BetStatus.PENDING);
     expect(client.emittedEvents[0].pattern).toBe(BET_EVENTS.PLACED);
+    expect(eventEmitter.emittedEvents[0].event).toBe("bet.placed");
   });
 
   it("lança erro quando não há rodada em fase de apostas", async () => {
     const roundRepository = new FakeRoundRepository();
     const betRepository = new FakeBetRepository();
     const client = new FakeClientProxy();
+    const eventEmitter = new FakeEventEmitter2();
 
-    const useCase = new PlaceBetUseCase(roundRepository, betRepository, client);
+    const useCase = new PlaceBetUseCase(
+      roundRepository,
+      betRepository,
+      client,
+      eventEmitter,
+    );
 
     await expect(
       useCase.execute({
@@ -110,6 +146,7 @@ describe("PlaceBetUseCase", () => {
     const roundRepository = new FakeRoundRepository();
     const betRepository = new FakeBetRepository();
     const client = new FakeClientProxy();
+    const eventEmitter = new FakeEventEmitter2();
 
     const round = createBettingRound();
     await roundRepository.save(round);
@@ -122,7 +159,12 @@ describe("PlaceBetUseCase", () => {
     });
     await betRepository.save(existingBet);
 
-    const useCase = new PlaceBetUseCase(roundRepository, betRepository, client);
+    const useCase = new PlaceBetUseCase(
+      roundRepository,
+      betRepository,
+      client,
+      eventEmitter,
+    );
 
     await expect(
       useCase.execute({
