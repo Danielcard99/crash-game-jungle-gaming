@@ -8,10 +8,16 @@ import {
 import { PlaceBetRequestDto } from "../dtos/place-bet-request.dto";
 import { PlaceBetUseCase } from "../../application/use-cases/place-bet.use-case";
 import { BetResponseDto } from "../dtos/bet-response.dto";
+import { CashOutUseCase } from "../../application/use-cases/cash-out.use-case";
+import { CashOutRequestDto } from "../dtos/cash-out-request.dto";
+import { CashOutResponseDto } from "../dtos/cash-out-response.dto";
 
 @Controller()
 export class GamesController {
-  constructor(private readonly placeBetUseCase: PlaceBetUseCase) {}
+  constructor(
+    private readonly placeBetUseCase: PlaceBetUseCase,
+    private readonly cashOutUseCase: CashOutUseCase,
+  ) {}
 
   @Get("health")
   check(): HealthCheckResponseDto {
@@ -24,19 +30,38 @@ export class GamesController {
     @CurrentUser() user: AuthenticatedUser,
     @Body() body: PlaceBetRequestDto,
   ): Promise<BetResponseDto> {
-    {
-      const bet = await this.placeBetUseCase.execute({
-        playerId: user.userId,
-        playerUsername: user.username,
-        amountInCents: BigInt(body.amountInCents),
-      });
+    const bet = await this.placeBetUseCase.execute({
+      playerId: user.userId,
+      playerUsername: user.username,
+      amountInCents: BigInt(body.amountInCents),
+    });
 
-      return {
-        id: bet.id,
-        roundId: bet.roundId,
-        status: bet.status,
-        amountBet: Number(bet.amountBet.valueInCents),
-      };
-    }
+    return {
+      id: bet.id,
+      roundId: bet.roundId,
+      status: bet.status,
+      amountBet: Number(bet.amountBet.valueInCents),
+    };
+  }
+
+  @Post("games/bet/cashout")
+  @UseGuards(JwtAuthGuard)
+  async cashOut(
+    @CurrentUser() user: AuthenticatedUser,
+    @Body() body: CashOutRequestDto,
+  ): Promise<CashOutResponseDto> {
+    const bet = await this.cashOutUseCase.execute({
+      playerId: user.userId,
+      currentMultiplier: body.currentMultiplier,
+    });
+
+    return {
+      id: bet.id,
+      roundId: bet.roundId,
+      status: bet.status,
+      amountBet: Number(bet.amountBet.valueInCents),
+      cashoutMultiplier: bet.cashoutMultiplier!,
+      payout: Number(bet.payout!.valueInCents),
+    };
   }
 }

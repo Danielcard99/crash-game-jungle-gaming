@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { BetRepository } from "../../domain/bet/bet.repository";
+import { type BetRepository } from "../../domain/bet/bet.repository";
 import { Bet } from "../../domain/bet/bet.aggregate";
 import { BetMapper } from "./bet.mapper";
 import { PrismaService } from "../prisma/prisma.service";
@@ -43,6 +43,21 @@ export class PrismaBetRepository implements BetRepository {
       where: {
         roundId,
         playerId,
+      },
+    });
+
+    if (!bet) {
+      return null;
+    }
+
+    return BetMapper.toDomain(bet);
+  }
+
+  async findActiveBetByPlayerId(playerId: string): Promise<Bet | null> {
+    const bet = await this.prisma.bet.findFirst({
+      where: {
+        playerId,
+        status: "ACTIVE",
       },
     });
 
