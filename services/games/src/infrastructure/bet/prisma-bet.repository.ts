@@ -22,9 +22,28 @@ export class PrismaBetRepository implements BetRepository {
       },
     });
   }
+
   async findById(id: string): Promise<Bet | null> {
     const bet = await this.prisma.bet.findUnique({
       where: { id },
+    });
+
+    if (!bet) {
+      return null;
+    }
+
+    return BetMapper.toDomain(bet);
+  }
+
+  async findByRoundIdAndPlayerId(
+    roundId: string,
+    playerId: string,
+  ): Promise<Bet | null> {
+    const bet = await this.prisma.bet.findFirst({
+      where: {
+        roundId,
+        playerId,
+      },
     });
 
     if (!bet) {
