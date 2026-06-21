@@ -1,6 +1,12 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { ROUND_REPOSITORY, RoundRepository } from "../../domain/round/round.repository";
-import { BET_REPOSITORY, BetRepository } from "../../domain/bet/bet.repository";
+import {
+  ROUND_REPOSITORY,
+  type RoundRepository,
+} from "../../domain/round/round.repository";
+import {
+  BET_REPOSITORY,
+  type BetRepository,
+} from "../../domain/bet/bet.repository";
 import { Round } from "../../domain/round/round.aggregate";
 
 @Injectable()

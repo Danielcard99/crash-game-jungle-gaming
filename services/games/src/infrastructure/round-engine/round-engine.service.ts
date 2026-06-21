@@ -1,4 +1,5 @@
 import { Injectable, Inject, OnModuleInit } from "@nestjs/common";
+import { EventEmitter2 } from "@nestjs/event-emitter";
 import {
   ROUND_REPOSITORY,
   type RoundRepository,
@@ -22,6 +23,7 @@ export class RoundEngineService implements OnModuleInit {
   constructor(
     @Inject(ROUND_REPOSITORY) private readonly roundRepository: RoundRepository,
     private readonly handleRoundCrashUseCase: HandleRoundCrashUseCase,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
 
   onModuleInit() {
@@ -54,10 +56,19 @@ export class RoundEngineService implements OnModuleInit {
     });
 
     await this.roundRepository.save(round);
+
+    this.eventEmitter.emit("round.created", {
+      roundId: round.id,
+      serverSeedHash: round.serverSeedHash,
+      bettingEndsAt: round.bettingEndsAt,
+    });
+
     await this.wait(this.BETTING_WINDOW_SECONDS * 1000);
 
     round.startRunning();
     await this.roundRepository.save(round);
+
+    this.eventEmitter.emit("round.started", { roundId: round.id });
 
     await this.runMultiplierLoop(round);
   }
@@ -71,8 +82,21 @@ export class RoundEngineService implements OnModuleInit {
 
       if (currentMultiplier >= round.crashPoint) {
         await this.handleRoundCrashUseCase.execute(round);
+
+        this.eventEmitter.emit("round.crashed", {
+          roundId: round.id,
+          crashPoint: round.crashPoint,
+          serverSeed: round.serverSeed,
+          serverSeedHash: round.serverSeedHash,
+        });
+
         return;
       }
+
+      this.eventEmitter.emit("round.tick", {
+        roundId: round.id,
+        currentMultiplier,
+      });
 
       await this.wait(this.TICK_INTERVAL_MS);
     }
