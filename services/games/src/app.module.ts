@@ -9,6 +9,7 @@ import { BetEventsController } from "./presentation/controllers/bet-events.contr
 import { ProcessBetConfirmedUseCase } from "./application/use-cases/process-bet-confirmed.use-case";
 import { ProcessBetRejectedUseCase } from "./application/use-cases/process-bet-rejected.use-case";
 import { AuthModule } from "./infrastructure/auth/auth.module";
+import { RoundEngineService } from "./infrastructure/round-engine/round-engine.service";
 
 @Module({
   controllers: [GamesController, BetEventsController],
@@ -18,6 +19,7 @@ import { AuthModule } from "./infrastructure/auth/auth.module";
     CashOutUseCase,
     ProcessBetConfirmedUseCase,
     ProcessBetRejectedUseCase,
+    RoundEngineService,
   ],
 })
 export class AppModule {}

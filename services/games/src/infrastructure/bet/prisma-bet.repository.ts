@@ -67,4 +67,12 @@ export class PrismaBetRepository implements BetRepository {
 
     return BetMapper.toDomain(bet);
   }
+
+  async findActiveBetsByRoundId(roundId: string): Promise<Bet[]> {
+    const bets = await this.prisma.bet.findMany({
+      where: { roundId, status: "ACTIVE" },
+    });
+
+    return bets.map((bet) => BetMapper.toDomain(bet));
+  }
 }

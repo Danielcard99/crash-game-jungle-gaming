@@ -10,4 +10,5 @@ export interface BetRepository {
     playerId: string,
   ): Promise<Bet | null>;
   findActiveBetByPlayerId(playerId: string): Promise<Bet | null>;
+  findActiveBetsByRoundId(roundId: string): Promise<Bet[]>;
 }
