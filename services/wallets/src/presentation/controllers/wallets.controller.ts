@@ -1,8 +1,12 @@
-import { Body, Controller, Get, Post } from "@nestjs/common";
+import { Controller, Get, Post, UseGuards } from "@nestjs/common";
 import { HealthCheckResponseDto } from "../dtos/health-check-response.dto";
 import { CreateWalletUseCase } from "../../application/use-cases/create-wallet.use-case";
 import { WalletResponseDto } from "../dtos/wallet-response.dto";
-import { CreateWalletRequestDto } from "../dtos/create-wallet-request.dto";
+import {
+  type AuthenticatedUser,
+  CurrentUser,
+  JwtAuthGuard,
+} from "@crash/auth-kit";
 
 @Controller()
 export class WalletsController {
@@ -13,13 +17,13 @@ export class WalletsController {
     return { status: "ok", service: "wallets" };
   }
 
-  // TODO: extrair do JWT quando autenticação estiver pronta
   @Post("wallets")
+  @UseGuards(JwtAuthGuard)
   async createWallet(
-    @Body() body: CreateWalletRequestDto,
+    @CurrentUser() user: AuthenticatedUser,
   ): Promise<WalletResponseDto> {
     const wallet = await this.createWalletUseCase.execute({
-      playerId: body.playerId,
+      playerId: user.userId,
     });
 
     return {
