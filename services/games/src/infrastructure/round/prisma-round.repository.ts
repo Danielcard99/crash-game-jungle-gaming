@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { RoundRepository } from "../../domain/round/round.repository";
+import { type RoundRepository } from "../../domain/round/round.repository";
 import { PrismaService } from "../prisma/prisma.service";
 import { Round } from "../../domain/round/round.aggregate";
 import { RoundMapper } from "./round.mapper";
