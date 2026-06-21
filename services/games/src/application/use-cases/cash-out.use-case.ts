@@ -1,9 +1,8 @@
-import { Inject, Injectable } from "@nestjs/common";
+import { Inject, Injectable, NotFoundException } from "@nestjs/common";
 import {
   BET_REPOSITORY,
   type BetRepository,
 } from "../../domain/bet/bet.repository";
-import { ClientProxy } from "@nestjs/microservices";
 import { Bet } from "../../domain/bet/bet.aggregate";
 import {
   BET_EVENTS,
@@ -19,13 +18,13 @@ export class CashOutUseCase {
   ) {}
 
   async execute(params: {
-    betId: string;
+    playerId: string;
     currentMultiplier: number;
   }): Promise<Bet> {
-    const bet = await this.betRepository.findById(params.betId);
+    const bet = await this.betRepository.findActiveBetByPlayerId(params.playerId);
 
     if (!bet) {
-      throw new Error("Bet not found");
+      throw new NotFoundException("No active bet found for this player");
     }
 
     bet.cashOut(params.currentMultiplier);

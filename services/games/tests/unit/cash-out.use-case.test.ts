@@ -32,6 +32,14 @@ class FakeBetRepository implements BetRepository {
       null
     );
   }
+
+  async findActiveBetByPlayerId(playerId: string): Promise<Bet | null> {
+    return (
+      this.bets.find(
+        (b) => b.playerId === playerId && b.status === BetStatus.ACTIVE,
+      ) ?? null
+    );
+  }
 }
 
 class FakeClientProxy implements EventPublisher {
@@ -59,7 +67,7 @@ describe("CashOutUseCase", () => {
 
     const useCase = new CashOutUseCase(betRepository, client);
     const result = await useCase.execute({
-      betId: bet.id,
+      playerId: "player-1",
       currentMultiplier: 2.5,
     });
 
@@ -68,32 +76,13 @@ describe("CashOutUseCase", () => {
     expect((client.emittedEvents[0].data as BetWonEvent).payout).toBe(2500);
   });
 
-  it("lança erro quando a aposta não existe", async () => {
+  it("lança erro quando não há aposta ativa pro jogador", async () => {
     const betRepository = new FakeBetRepository();
     const client = new FakeClientProxy();
     const useCase = new CashOutUseCase(betRepository, client);
 
     await expect(
-      useCase.execute({ betId: "non-existent", currentMultiplier: 2.0 }),
-    ).rejects.toThrow("Bet not found");
-  });
-
-  it("lança erro quando a aposta não está ACTIVE", async () => {
-    const betRepository = new FakeBetRepository();
-    const client = new FakeClientProxy();
-
-    const bet = Bet.create({
-      roundId: "round-1",
-      playerId: "player-1",
-      playerUsername: "tester",
-      amountBet: BetAmount.create(1000n),
-    });
-    await betRepository.save(bet); // fica PENDING, não confirma
-
-    const useCase = new CashOutUseCase(betRepository, client);
-
-    await expect(
-      useCase.execute({ betId: bet.id, currentMultiplier: 2.0 }),
-    ).rejects.toThrow("Only bets in ACTIVE status can be cashed out");
+      useCase.execute({ playerId: "player-1", currentMultiplier: 2.0 }),
+    ).rejects.toThrow("No active bet found for this player");
   });
 });

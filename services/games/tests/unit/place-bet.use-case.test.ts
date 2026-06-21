@@ -4,6 +4,7 @@ import { Round } from "../../src/domain/round/round.aggregate";
 import { Bet } from "../../src/domain/bet/bet.aggregate";
 import { BetAmount } from "../../src/domain/bet/bet-amount.value-object";
 import { BetStatus } from "../../src/domain/bet/bet-status.enum";
+import { RoundStatus } from "../../src/domain/round/round-status.enum";
 import type { RoundRepository } from "../../src/domain/round/round.repository";
 import type { BetRepository } from "../../src/domain/bet/bet.repository";
 import { BET_EVENTS, type EventPublisher } from "@crash/rabbitmq-kit";
@@ -19,6 +20,10 @@ class FakeRoundRepository implements RoundRepository {
 
   async findById(id: string): Promise<Round | null> {
     return this.rounds.find((r) => r.id === id) ?? null;
+  }
+
+  async findCurrentBettingRound(): Promise<Round | null> {
+    return this.rounds.find((r) => r.status === RoundStatus.BETTING) ?? null;
   }
 }
 
@@ -76,7 +81,6 @@ describe("PlaceBetUseCase", () => {
     const useCase = new PlaceBetUseCase(roundRepository, betRepository, client);
 
     const bet = await useCase.execute({
-      roundId: round.id,
       playerId: "player-1",
       playerUsername: "tester",
       amountInCents: 1000n,
@@ -86,7 +90,7 @@ describe("PlaceBetUseCase", () => {
     expect(client.emittedEvents[0].pattern).toBe(BET_EVENTS.PLACED);
   });
 
-  it("lança erro quando a rodada não existe", async () => {
+  it("lança erro quando não há rodada em fase de apostas", async () => {
     const roundRepository = new FakeRoundRepository();
     const betRepository = new FakeBetRepository();
     const client = new FakeClientProxy();
@@ -95,33 +99,11 @@ describe("PlaceBetUseCase", () => {
 
     await expect(
       useCase.execute({
-        roundId: "non-existent",
         playerId: "player-1",
         playerUsername: "tester",
         amountInCents: 1000n,
       }),
-    ).rejects.toThrow("Round not found");
-  });
-
-  it("lança erro quando a rodada não está em BETTING", async () => {
-    const roundRepository = new FakeRoundRepository();
-    const betRepository = new FakeBetRepository();
-    const client = new FakeClientProxy();
-
-    const round = createBettingRound();
-    round.startRunning();
-    await roundRepository.save(round);
-
-    const useCase = new PlaceBetUseCase(roundRepository, betRepository, client);
-
-    await expect(
-      useCase.execute({
-        roundId: round.id,
-        playerId: "player-1",
-        playerUsername: "tester",
-        amountInCents: 1000n,
-      }),
-    ).rejects.toThrow("Round is not in betting phase");
+    ).rejects.toThrow("No round is currently accepting bets");
   });
 
   it("lança erro quando o jogador já apostou na rodada", async () => {
@@ -144,7 +126,6 @@ describe("PlaceBetUseCase", () => {
 
     await expect(
       useCase.execute({
-        roundId: round.id,
         playerId: "player-1",
         playerUsername: "tester",
         amountInCents: 1000n,
