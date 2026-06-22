@@ -44,12 +44,12 @@ bun run docker:prune   # Remove tudo (containers, volumes, imagens)
 
 ## Acessos
 
-| Serviço            | URL                      | Credenciais       |
-| ------------------ | ------------------------ | ----------------- |
-| Frontend           | http://localhost:3000    | player / player123 |
-| Kong (API Gateway) | http://localhost:8000    | —                 |
-| Keycloak           | http://localhost:8080    | admin / admin     |
-| RabbitMQ UI        | http://localhost:15672   | admin / admin     |
+| Serviço            | URL                    | Credenciais        |
+| ------------------ | ---------------------- | ------------------ |
+| Frontend           | http://localhost:3000  | player / player123 |
+| Kong (API Gateway) | http://localhost:8000  | —                  |
+| Keycloak           | http://localhost:8080  | admin / admin      |
+| RabbitMQ UI        | http://localhost:15672 | admin / admin      |
 
 ## Testes
 
@@ -92,6 +92,10 @@ RabbitMQ é mais simples de configurar localmente e suficiente para o volume des
 ### Por que comunicação assíncrona entre serviços?
 
 Acoplamento temporal zero — Game Service não depende da disponibilidade do Wallet Service para confirmar uma aposta. Se o Wallet Service estiver temporariamente indisponível, as mensagens ficam enfileiradas no RabbitMQ e são processadas quando ele voltar. A alternativa síncrona (REST entre serviços) criaria dependência direta e pontos únicos de falha.
+
+### Migrations automáticas no Docker
+
+O Dockerfile de cada serviço executa `prisma migrate deploy` antes de iniciar a aplicação. Isso garante que as tabelas são criadas automaticamente a cada `docker:up`, mesmo após `docker:prune`. Sem necessidade de passo manual.
 
 ---
 
@@ -148,6 +152,7 @@ O `RoundEngineService` roda continuamente em background. A cada ciclo:
 3. Aguarda a janela de apostas (10s)
 4. Inicia o loop de multiplicador a cada 100ms: `m(t) = e^(0.06 * t)`
 5. Quando o multiplicador atinge o `crashPoint`, liquida todas as apostas ativas
+6. Verifica auto cashout a cada tick — apostas com `autoCashoutMultiplier` são sacadas automaticamente quando o multiplicador atinge o alvo
 
 ---
 
@@ -200,6 +205,7 @@ O script `docker/scripts/seed-wallet.sh` roda automaticamente após o `docker:up
 
 - **Seed determinística para testes E2E** — `POST /test/seed-round` injeta rodadas com `crashPoint` fixo
 - **Fórmula da curva na UI** — exibida no frontend com house edge e RTP
+- **Auto cashout** — jogador define multiplicador alvo e o saque é executado automaticamente pelo motor quando atingido
 
 ---
 
@@ -208,3 +214,4 @@ O script `docker/scripts/seed-wallet.sh` roda automaticamente após o `docker:up
 - A seed determinística foi implementada via endpoint HTTP (`POST /test/seed-round`, só existe com `NODE_ENV=test`) em vez de script SQL direto — isso garante que o estado criado respeita as invariantes de domínio (usa `Round.create()` e `RoundRepository`), evitando inserções que poderiam deixar o banco em estado inconsistente. Ativado via `docker-compose.test.yml`, nunca exposto em produção.
 - Não foi implementado Outbox/Inbox transacional — at-least-once delivery do RabbitMQ é suficiente para o escopo, mas em produção real seria necessário para garantir exactly-once processing.
 - O `bettingWindowSeconds` nos testes E2E usa 10s (igual ao motor) para manter comportamento consistente com o ambiente de produção.
+- As variáveis de ambiente dos serviços estão hardcoded no `docker-compose.yml` — são valores de desenvolvimento local sem segredo real, eliminando a necessidade de copiar `.env` manualmente para rodar com Docker.
