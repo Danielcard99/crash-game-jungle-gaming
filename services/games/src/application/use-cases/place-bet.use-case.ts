@@ -3,6 +3,7 @@ import {
   Inject,
   ServiceUnavailableException,
   ConflictException,
+  BadRequestException,
 } from "@nestjs/common";
 import {
   ROUND_REPOSITORY,
@@ -58,7 +59,12 @@ export class PlaceBetUseCase {
       throw new ConflictException("Player already placed a bet in this round");
     }
 
-    const amountBet = BetAmount.create(params.amountInCents);
+    let amountBet: BetAmount;
+    try {
+      amountBet = BetAmount.create(params.amountInCents);
+    } catch (e) {
+      throw new BadRequestException((e as Error).message);
+    }
 
     const bet = Bet.create({
       roundId: round.id,

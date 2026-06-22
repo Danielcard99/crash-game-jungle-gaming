@@ -1,0 +1,4 @@
+services:
+  games:
+    environment:
+      NODE_ENV: test

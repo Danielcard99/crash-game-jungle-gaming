@@ -40,30 +40,40 @@ export class RoundEngineService implements OnModuleInit {
   }
 
   private async startNewRound(): Promise<void> {
-    const serverSeed = generateServerSeed();
-    const serverSeedHash = hashSeed(serverSeed);
-    const crashPoint = calculateCrashPoint(
-      serverSeed,
-      this.NONCE,
-      this.HOUSE_EDGE_PERCENT,
-    );
+    const existingRound = await this.roundRepository.findCurrentBettingRound();
 
-    const round = Round.create({
-      serverSeed,
-      serverSeedHash,
-      crashPoint,
-      bettingWindowSeconds: this.BETTING_WINDOW_SECONDS,
-    });
+    let round: Round;
 
-    await this.roundRepository.save(round);
+    if (existingRound) {
+      round = existingRound;
+    } else {
+      const serverSeed = generateServerSeed();
+      const serverSeedHash = hashSeed(serverSeed);
+      const crashPoint = calculateCrashPoint(
+        serverSeed,
+        this.NONCE,
+        this.HOUSE_EDGE_PERCENT,
+      );
 
-    this.eventEmitter.emit("round.created", {
-      roundId: round.id,
-      serverSeedHash: round.serverSeedHash,
-      bettingEndsAt: round.bettingEndsAt,
-    });
+      round = Round.create({
+        serverSeed,
+        serverSeedHash,
+        crashPoint,
+        bettingWindowSeconds: this.BETTING_WINDOW_SECONDS,
+      });
 
-    await this.wait(this.BETTING_WINDOW_SECONDS * 1000);
+      await this.roundRepository.save(round);
+
+      this.eventEmitter.emit("round.created", {
+        roundId: round.id,
+        serverSeedHash: round.serverSeedHash,
+        bettingEndsAt: round.bettingEndsAt,
+      });
+    }
+
+    const bettingEndsAt = round.bettingEndsAt!.getTime();
+    const waitMs = Math.max(0, bettingEndsAt - Date.now());
+    await this.wait(waitMs);
 
     round.startRunning();
     await this.roundRepository.save(round);
