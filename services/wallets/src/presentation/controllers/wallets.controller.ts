@@ -1,4 +1,11 @@
-import { Controller, Get, Post, UseGuards } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  UnauthorizedException,
+  UseGuards,
+} from "@nestjs/common";
 import { HealthCheckResponseDto } from "../dtos/health-check-response.dto";
 import { CreateWalletUseCase } from "../../application/use-cases/create-wallet.use-case";
 import { WalletResponseDto } from "../dtos/wallet-response.dto";
@@ -8,12 +15,14 @@ import {
   JwtAuthGuard,
 } from "@crash/auth-kit";
 import { GetWalletUseCase } from "../../application/use-cases/get-wallet.use-case";
+import { SeedWalletUseCase } from "../../application/use-cases/seed-wallet.use-case";
 
 @Controller("wallets")
 export class WalletsController {
   constructor(
     private readonly createWalletUseCase: CreateWalletUseCase,
     private readonly getWalletUseCase: GetWalletUseCase,
+    private readonly seedWalletUseCase: SeedWalletUseCase,
   ) {}
 
   @Get("health")
@@ -49,5 +58,16 @@ export class WalletsController {
       playerId: wallet.playerId,
       balance: Number(wallet.balance.valueInCents),
     };
+  }
+
+  @Post("seed")
+  async seedWallet(
+    @Body() body: { playerId: string; secret: string },
+  ): Promise<void> {
+    if (body.secret !== "dev-seed-secret") {
+      throw new UnauthorizedException();
+    }
+
+    await this.seedWalletUseCase.execute(body.playerId);
   }
 }

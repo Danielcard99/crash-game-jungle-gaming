@@ -11,6 +11,22 @@ services:
         paths:
           - /socket.io
         strip_path: false
+    plugins:
+      - name: cors
+        config:
+          origins:
+            - "http://localhost:3000"
+            - "http://localhost:5173"
+          methods:
+            - GET
+            - POST
+            - OPTIONS
+          headers:
+            - Authorization
+            - Content-Type
+          exposed_headers:
+            - Authorization
+          credentials: true
 
   - name: wallets-service
     url: http://wallets:4002
@@ -19,3 +35,19 @@ services:
         paths:
           - /wallets
         strip_path: false
+    plugins:
+      - name: cors
+        config:
+          origins:
+            - "http://localhost:3000"
+            - "http://localhost:5173"
+          methods:
+            - GET
+            - POST
+            - OPTIONS
+          headers:
+            - Authorization
+            - Content-Type
+          exposed_headers:
+            - Authorization
+          credentials: true
