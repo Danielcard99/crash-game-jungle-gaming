@@ -1,8 +1,9 @@
 import env from "./env";
-import { useAuthStore } from "@/stores/auth.store";
+import { auth } from "./auth";
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
-  const token = useAuthStore.getState().accessToken;
+  const user = await auth.getUser();
+  const token = user && !user.expired ? user.access_token : null;
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
     ...(token ? { Authorization: `Bearer ${token}` } : {}),
@@ -12,7 +13,9 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(`${env.apiUrl}${path}`, { ...init, headers });
 
   if (!res.ok) {
-    const error = await res.json().catch(() => ({ message: res.statusText })) as { message?: string };
+    const error = (await res.json().catch(() => ({ message: res.statusText }))) as {
+      message?: string;
+    };
     throw new Error(error.message ?? `HTTP ${res.status}`);
   }
 

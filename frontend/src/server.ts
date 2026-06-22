@@ -24,7 +24,6 @@ const MIME: Record<string, string> = {
 };
 
 const CLIENT_DIR = join(fileURLToPath(new URL("../client", import.meta.url)));
-console.log("CLIENT_DIR:", CLIENT_DIR); // temporário
 
 type ServerEntry = {
   fetch: (request: Request, env: unknown, ctx: unknown) => Promise<Response> | Response;
