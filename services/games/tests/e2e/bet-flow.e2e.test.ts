@@ -78,14 +78,18 @@ describe("Bet flow E2E", () => {
     });
     expect(betRes.status).toBe(201);
 
-    // Espera rodada crashar: 10s janela + ~7s até 1.5x + margem
-    await sleep(25000);
-
-    const betsRes = await fetch(`${BASE_URL}/games/bets/me`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    const bets = await betsRes.json();
-    const myBet = bets.find((b: any) => b.roundId === roundId);
+    // Polling até a aposta ser marcada como LOST (engine pode demorar a pegar o round)
+    // Intervalo de 3s para não bater o rate limit do Kong (30 req/min)
+    let myBet: any;
+    for (let i = 0; i < 20; i++) {
+      await sleep(3000);
+      const betsRes = await fetch(`${BASE_URL}/games/bets/me`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const bets = await betsRes.json();
+      myBet = bets.find((b: any) => b.roundId === roundId);
+      if (myBet?.status === "LOST") break;
+    }
     expect(myBet).toBeDefined();
     expect(myBet.status).toBe("LOST");
   }, 60000);
@@ -128,7 +132,8 @@ describe("Bet flow E2E", () => {
   }, 10000);
 
   it("aposta durante rodada ativa → erro", async () => {
-    const { bettingEndsAt, roundId } = await seedRound();
+    // crashPoint alto garante que o round fica em RUNNING tempo suficiente para o teste
+    const { bettingEndsAt, roundId } = await seedRound({ crashPoint: 100 });
 
     // Espera a janela de apostas terminar
     const endsAt = new Date(bettingEndsAt).getTime();
