@@ -20,6 +20,8 @@ import {
   type EventPublisher,
   type BetPlacedEvent,
 } from "@crash/rabbitmq-kit";
+import type { LocalEventEmitter } from "../events/local-event-emitter";
+import { EventEmitter2 } from "@nestjs/event-emitter";
 
 @Injectable()
 export class PlaceBetUseCase {
@@ -27,6 +29,7 @@ export class PlaceBetUseCase {
     @Inject(ROUND_REPOSITORY) private readonly roundRepository: RoundRepository,
     @Inject(BET_REPOSITORY) private readonly betRepository: BetRepository,
     @Inject("WALLETS_CLIENT") private readonly walletsClient: EventPublisher,
+    @Inject(EventEmitter2) private readonly eventEmitter: LocalEventEmitter,
   ) {}
 
   async execute(params: {
@@ -73,6 +76,12 @@ export class PlaceBetUseCase {
     };
 
     this.walletsClient.emit(BET_EVENTS.PLACED, event);
+
+    this.eventEmitter.emit("bet.placed", {
+      roundId: round.id,
+      playerUsername: bet.playerUsername,
+      amountBet: Number(amountBet.valueInCents),
+    });
 
     return bet;
   }
