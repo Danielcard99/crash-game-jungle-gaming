@@ -1,0 +1,95 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-danger: var(--danger);
+  --color-success: var(--success);
+  --font-display: "Space Grotesk", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+}
+
+:root {
+  --background: oklch(0.16 0.03 270);
+  --foreground: oklch(0.98 0.01 90);
+  --card: oklch(0.21 0.04 270);
+  --card-foreground: oklch(0.98 0.01 90);
+  --primary: oklch(0.82 0.19 85);
+  --primary-foreground: oklch(0.16 0.03 270);
+  --accent: oklch(0.7 0.25 340);
+  --accent-foreground: oklch(0.98 0.01 90);
+  --muted: oklch(0.28 0.04 270);
+  --muted-foreground: oklch(0.72 0.03 270);
+  --border: oklch(0.32 0.05 270);
+  --danger: oklch(0.65 0.25 25);
+  --success: oklch(0.78 0.21 150);
+
+  --gradient-cosmic: radial-gradient(ellipse at top, oklch(0.28 0.12 290), oklch(0.16 0.03 270) 60%);
+  --gradient-rocket: linear-gradient(135deg, oklch(0.82 0.19 85), oklch(0.7 0.25 30));
+  --gradient-multiplier: linear-gradient(180deg, oklch(0.88 0.2 145), oklch(0.7 0.25 150));
+  --shadow-glow: 0 0 60px oklch(0.82 0.19 85 / 0.45);
+  --shadow-accent: 0 0 40px oklch(0.7 0.25 340 / 0.5);
+}
+
+@layer base {
+  * { border-color: var(--color-border); }
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-display);
+  }
+}
+
+@utility text-gradient-multiplier {
+  background: var(--gradient-multiplier);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@utility bg-cosmic {
+  background: var(--gradient-cosmic);
+}
+
+@utility shadow-glow {
+  box-shadow: var(--shadow-glow);
+}
+
+@utility shadow-accent-glow {
+  box-shadow: var(--shadow-accent);
+}
+
+@keyframes float-up {
+  0%, 100% { transform: translateY(0) rotate(-12deg); }
+  50% { transform: translateY(-14px) rotate(-12deg); }
+}
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+@keyframes grid-scroll {
+  from { background-position: 0 0; }
+  to { background-position: 0 40px; }
+}
+@keyframes ticker {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+@utility animate-float { animation: float-up 3s ease-in-out infinite; }
+@utility animate-pulse-glow { animation: pulse-glow 2s ease-in-out infinite; }
+@utility animate-grid { animation: grid-scroll 1.2s linear infinite; }
+@utility animate-ticker { animation: ticker 30s linear infinite; }
