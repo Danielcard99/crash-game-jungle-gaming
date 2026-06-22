@@ -9,8 +9,7 @@ export function useCashout() {
   const multiplier = useGameStore((s) => s.multiplier);
 
   return useMutation({
-    mutationFn: () =>
-      api.post<Bet>("/games/bet/cashout", { currentMultiplier: multiplier }),
+    mutationFn: () => api.post<Bet>("/games/bet/cashout", { currentMultiplier: multiplier }),
     onSuccess: () => {
       clearMyActiveBet();
       queryClient.invalidateQueries({ queryKey: ["wallet"] });

@@ -28,6 +28,7 @@ interface GameStore {
   crashSeeds: { serverSeed: string; serverSeedHash: string } | null;
   liveBets: LiveBet[];
   myActiveBet: { amount: Cents; autoCashout: Multiplier | null } | null;
+  socketConnected: boolean;
 
   initFromRound: (round: Round) => void;
   setBetting: (roundId: string, bettingEndsAt: string, serverSeedHash: string) => void;
@@ -38,6 +39,7 @@ interface GameStore {
   applyBetCashout: (username: string, cashoutMultiplier: Multiplier, payout: Cents) => void;
   setMyActiveBet: (amount: Cents, autoCashout: Multiplier | null) => void;
   clearMyActiveBet: () => void;
+  setSocketConnected: (connected: boolean) => void;
 }
 
 export const useGameStore = create<GameStore>()((set) => ({
@@ -51,6 +53,7 @@ export const useGameStore = create<GameStore>()((set) => ({
   crashSeeds: null,
   liveBets: [],
   myActiveBet: null,
+  socketConnected: true,
 
   initFromRound: (round) =>
     set({
@@ -58,9 +61,7 @@ export const useGameStore = create<GameStore>()((set) => ({
       roundId: round.id,
       roundNumber: null,
       serverSeedHash: round.serverSeedHash,
-      bettingEndsAt: round.bettingEndsAt
-        ? new Date(round.bettingEndsAt).getTime()
-        : null,
+      bettingEndsAt: round.bettingEndsAt ? new Date(round.bettingEndsAt).getTime() : null,
       crashPoint: null,
       crashSeeds: null,
       multiplier: 1,
@@ -100,20 +101,18 @@ export const useGameStore = create<GameStore>()((set) => ({
       ),
     })),
 
-  addBet: (bet) =>
-    set((state) => ({ liveBets: [...state.liveBets, bet] })),
+  addBet: (bet) => set((state) => ({ liveBets: [...state.liveBets, bet] })),
 
   applyBetCashout: (username, cashoutMultiplier, payout) =>
     set((state) => ({
       liveBets: state.liveBets.map((b) =>
-        b.username === username
-          ? { ...b, cashoutMultiplier, payout, status: "won" as const }
-          : b,
+        b.username === username ? { ...b, cashoutMultiplier, payout, status: "won" as const } : b,
       ),
     })),
 
-  setMyActiveBet: (amount, autoCashout) =>
-    set({ myActiveBet: { amount, autoCashout } }),
+  setMyActiveBet: (amount, autoCashout) => set({ myActiveBet: { amount, autoCashout } }),
 
   clearMyActiveBet: () => set({ myActiveBet: null }),
+
+  setSocketConnected: (connected) => set({ socketConnected: connected }),
 }));

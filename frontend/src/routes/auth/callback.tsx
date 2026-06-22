@@ -19,8 +19,7 @@ function AuthCallback() {
         setUser(
           {
             sub: user.profile.sub,
-            preferred_username:
-              user.profile.preferred_username ?? user.profile.sub,
+            preferred_username: user.profile.preferred_username ?? user.profile.sub,
             email: user.profile.email,
           },
           user.access_token,

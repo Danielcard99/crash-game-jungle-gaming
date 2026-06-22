@@ -7,18 +7,23 @@ export function useAuthInit() {
 
   useEffect(() => {
     // Sync OIDC storage → our store on every page load
-    auth.getUser().then((user) => {
-      if (user && !user.expired) {
-        setUser(
-          {
-            sub: user.profile.sub,
-            preferred_username: user.profile.preferred_username ?? user.profile.sub,
-            email: user.profile.email,
-          },
-          user.access_token,
-        );
-      }
-    });
+    auth
+      .getUser()
+      .then((user) => {
+        if (user && !user.expired) {
+          setUser(
+            {
+              sub: user.profile.sub,
+              preferred_username: user.profile.preferred_username ?? user.profile.sub,
+              email: user.profile.email,
+            },
+            user.access_token,
+          );
+        }
+      })
+      .catch((err: unknown) => {
+        console.error("[auth] Falha ao restaurar sessão:", err);
+      });
 
     // Keep store in sync when oidc-client-ts silently renews the token
     const cleanup = auth.onUserLoaded((user) => {

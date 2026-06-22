@@ -1,9 +1,18 @@
+function getEnv(key: string, devDefault: string): string {
+  const value = import.meta.env[key] as string | undefined;
+  if (value) return value;
+  if (import.meta.env.PROD) {
+    throw new Error(`[env] ${key} é obrigatório em produção mas não foi definido.`);
+  }
+  return devDefault;
+}
+
 const env = {
-  apiUrl: (import.meta.env.VITE_API_URL as string | undefined) ?? "http://localhost:8000",
-  wsUrl: (import.meta.env.VITE_WS_URL as string | undefined) ?? "http://localhost:4001",
-  keycloakUrl: (import.meta.env.VITE_KEYCLOAK_URL as string | undefined) ?? "http://localhost:8080",
-  keycloakRealm: (import.meta.env.VITE_KEYCLOAK_REALM as string | undefined) ?? "crash-game",
-  keycloakClientId: (import.meta.env.VITE_KEYCLOAK_CLIENT_ID as string | undefined) ?? "crash-game-client",
+  apiUrl: getEnv("VITE_API_URL", "http://localhost:8000"),
+  wsUrl: getEnv("VITE_WS_URL", "http://localhost:4001"),
+  keycloakUrl: getEnv("VITE_KEYCLOAK_URL", "http://localhost:8080"),
+  keycloakRealm: getEnv("VITE_KEYCLOAK_REALM", "crash-game"),
+  keycloakClientId: getEnv("VITE_KEYCLOAK_CLIENT_ID", "crash-game-client"),
 };
 
 export default env;

@@ -60,8 +60,8 @@ function LoginPage() {
         <div className="w-full rounded-2xl border border-border bg-card p-8 shadow-glow">
           <h1 className="font-display text-2xl font-bold">Entrar para apostar</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Autenticação via Keycloak (OIDC · PKCE S256). Seu saldo e histórico
-            estão vinculados à sua conta.
+            Autenticação via Keycloak (OIDC · PKCE S256). Seu saldo e histórico estão vinculados à
+            sua conta.
           </p>
 
           <button
@@ -83,32 +83,10 @@ function LoginPage() {
           </button>
 
           <p className="mt-6 text-center text-[11px] text-muted-foreground">
-            Realm{" "}
-            <code className="rounded bg-muted px-1.5 py-0.5 font-mono">
-              crash-game
-            </code>{" "}
-            · Client{" "}
-            <code className="rounded bg-muted px-1.5 py-0.5 font-mono">
-              crash-game-client
-            </code>
+            Realm <code className="rounded bg-muted px-1.5 py-0.5 font-mono">crash-game</code> ·
+            Client{" "}
+            <code className="rounded bg-muted px-1.5 py-0.5 font-mono">crash-game-client</code>
           </p>
-
-          <div className="my-5 flex items-center gap-3 text-[10px] uppercase tracking-wider text-muted-foreground">
-            <span className="h-px flex-1 bg-border" />
-            teste rápido
-            <span className="h-px flex-1 bg-border" />
-          </div>
-
-          <div className="rounded-lg border border-border bg-background/60 px-4 py-3 text-xs text-muted-foreground">
-            <p className="font-semibold text-foreground">Usuário de teste</p>
-            <p className="mt-1">
-              <code className="font-mono">player</code> /{" "}
-              <code className="font-mono">player123</code>
-            </p>
-            <p className="mt-2 text-[10px]">
-              Clique em "Continuar com Keycloak" e use as credenciais acima.
-            </p>
-          </div>
         </div>
 
         <Link

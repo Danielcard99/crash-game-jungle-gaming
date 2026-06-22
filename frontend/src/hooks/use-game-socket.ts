@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { toast } from "sonner";
 import { getSocket } from "@/lib/socket";
 import { useGameStore } from "@/stores/game.store";
 import type {
@@ -23,6 +24,19 @@ export function useGameSocket() {
   useEffect(() => {
     const socket = getSocket();
 
+    const onConnect = () => useGameStore.getState().setSocketConnected(true);
+    const onDisconnect = () => useGameStore.getState().setSocketConnected(false);
+    const onReconnectFailed = () => {
+      toast.error("Conexão perdida", {
+        description: "Não foi possível reconectar ao servidor. Recarregue a página.",
+        duration: Infinity,
+      });
+    };
+
+    socket.on("connect", onConnect);
+    socket.on("disconnect", onDisconnect);
+    socket.io.on("reconnect_failed", onReconnectFailed);
+
     socket.on(EV.ROUND_BETTING, (data: WsRoundBetting) => {
       const s = useGameStore.getState();
       s.setBetting(data.roundId, data.bettingEndsAt, data.serverSeedHash);
@@ -38,9 +52,7 @@ export function useGameSocket() {
     });
 
     socket.on(EV.ROUND_CRASHED, (data: WsRoundCrashed) => {
-      useGameStore
-        .getState()
-        .setCrashed(data.crashPoint, data.serverSeed, data.serverSeedHash);
+      useGameStore.getState().setCrashed(data.crashPoint, data.serverSeed, data.serverSeedHash);
     });
 
     socket.on(EV.BET_PLACED, (data: WsBetPlaced) => {
@@ -61,6 +73,9 @@ export function useGameSocket() {
     });
 
     return () => {
+      socket.off("connect", onConnect);
+      socket.off("disconnect", onDisconnect);
+      socket.io.off("reconnect_failed", onReconnectFailed);
       Object.values(EV).forEach((ev) => socket.off(ev));
     };
   }, []);
