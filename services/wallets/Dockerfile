@@ -19,4 +19,4 @@ WORKDIR /app/services/wallets
 
 EXPOSE 4002
 
-CMD ["sh", "-c", "bunx prisma migrate deploy && bun run src/main.ts"]
+CMD ["sh", "-c", "bunx prisma generate && bunx prisma migrate deploy && bun run src/main.ts"]
