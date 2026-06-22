@@ -62,7 +62,7 @@ export function BetPanel() {
       {
         onSuccess: () =>
           toast.success("Aposta confirmada!", {
-            description: `${formatCurrency(amountCents)} na rodada ${roundLabel}`,
+            description: formatCurrency(amountCents),
           }),
         onError: (err) => toast.error("Erro ao apostar", { description: err.message }),
       },
