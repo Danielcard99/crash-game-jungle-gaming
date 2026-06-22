@@ -77,7 +77,7 @@ function Index() {
                 <button
                   type="button"
                   onClick={handleLogout}
-                  className="rounded-lg border border-border bg-card px-3 py-2 text-sm font-medium text-muted-foreground transition hover:text-foreground"
+                  className="cursor-pointer rounded-lg border border-border bg-card px-3 py-2 text-sm font-medium text-muted-foreground transition hover:text-foreground"
                 >
                   Sair
                 </button>
@@ -97,7 +97,7 @@ function Index() {
                   description: "Você será redirecionado ao gateway.",
                 })
               }
-              className="rounded-lg bg-[image:var(--gradient-rocket)] px-4 py-2 text-sm font-semibold text-primary-foreground shadow-glow transition hover:opacity-90"
+              className="cursor-pointer rounded-lg bg-[image:var(--gradient-rocket)] px-4 py-2 text-sm font-semibold text-primary-foreground shadow-glow transition hover:opacity-90"
             >
               Depositar
             </button>
