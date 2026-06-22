@@ -13,11 +13,14 @@ export class GetWalletUseCase {
   ) {}
 
   async execute(playerId: string): Promise<Wallet> {
-    const wallet = await this.walletRepository.findByPlayerId(playerId);
+    const existing = await this.walletRepository.findByPlayerId(playerId);
 
-    if (!wallet) {
-      throw new NotFoundException("Wallet not found");
+    if (existing) {
+      return existing;
     }
+
+    const wallet = Wallet.create({ playerId });
+    await this.walletRepository.save(wallet);
 
     return wallet;
   }
