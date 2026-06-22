@@ -43,4 +43,21 @@ export class PrismaRoundRepository implements RoundRepository {
 
     return round ? RoundMapper.toDomain(round) : null;
   }
+
+  async findLatestUnsettledRound(): Promise<Round | null> {
+    const round = await this.prisma.round.findFirst({
+      where: { status: { not: "SETTLED" } },
+      orderBy: { createdAt: "desc" },
+    });
+    return round ? RoundMapper.toDomain(round) : null;
+  }
+
+  async findSettledRounds(limit: number): Promise<Round[]> {
+    const rounds = await this.prisma.round.findMany({
+      where: { status: "SETTLED" },
+      orderBy: { createdAt: "desc" },
+      take: limit,
+    });
+    return rounds.map((round) => RoundMapper.toDomain(round));
+  }
 }

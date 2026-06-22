@@ -13,6 +13,10 @@ import { RoundEngineService } from "./infrastructure/round-engine/round-engine.s
 import { EventEmitterModule } from "@nestjs/event-emitter";
 import { HandleRoundCrashUseCase } from "./application/use-cases/handle-round-crash.use-case";
 import { GameGateway } from "./infrastructure/websocket/game.gateway";
+import { GetMyBetsUseCase } from "./application/use-cases/get-my-bets.use-case";
+import { GetCurrentRoundUseCase } from "./application/use-cases/get-current-round.use-case";
+import { GetRoundHistoryUseCase } from "./application/use-cases/get-round-history.use-case";
+import { VerifyRoundUseCase } from "./application/use-cases/verify-round.use-case";
 
 @Module({
   controllers: [GamesController, BetEventsController],
@@ -31,6 +35,10 @@ import { GameGateway } from "./infrastructure/websocket/game.gateway";
     RoundEngineService,
     HandleRoundCrashUseCase,
     GameGateway,
+    GetMyBetsUseCase,
+    GetCurrentRoundUseCase,
+    GetRoundHistoryUseCase,
+    VerifyRoundUseCase,
   ],
 })
 export class AppModule {}

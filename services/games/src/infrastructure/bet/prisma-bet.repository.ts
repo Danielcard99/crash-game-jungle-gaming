@@ -75,4 +75,13 @@ export class PrismaBetRepository implements BetRepository {
 
     return bets.map((bet) => BetMapper.toDomain(bet));
   }
+
+  async findAllByPlayerId(playerId: string): Promise<Bet[]> {
+    const bets = await this.prisma.bet.findMany({
+      where: { playerId },
+      orderBy: { placedAt: "desc" },
+    });
+
+    return bets.map((bet) => BetMapper.toDomain(bet));
+  }
 }
