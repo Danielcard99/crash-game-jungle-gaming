@@ -33,12 +33,13 @@ describe("GetWalletUseCase", () => {
     expect(result.playerId).toBe("player-1");
   });
 
-  it("lança erro quando o jogador não tem carteira", async () => {
+  it("cria a carteira automaticamente quando o jogador não tem uma", async () => {
     const walletRepository = new FakeWalletRepository();
     const useCase = new GetWalletUseCase(walletRepository);
 
-    await expect(useCase.execute("player-1")).rejects.toThrow(
-      "Wallet not found",
-    );
+    const result = await useCase.execute("player-1");
+
+    expect(result.playerId).toBe("player-1");
+    expect(Number(result.balance.valueInCents)).toBe(0);
   });
 });
