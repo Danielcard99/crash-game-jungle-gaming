@@ -63,6 +63,8 @@ export interface WsRoundCrashed {
   crashPoint: Multiplier;
   serverSeed: string;
   serverSeedHash: string;
+  clientSeed: string;
+  nonce: number;
 }
 
 export interface WsBetPlaced {

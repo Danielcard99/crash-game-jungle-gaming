@@ -34,6 +34,8 @@ export class GameGateway {
     crashPoint: number;
     serverSeed: string;
     serverSeedHash: string;
+    clientSeed: string;
+    nonce: number;
   }) {
     this.server.emit("round:crashed", payload);
   }

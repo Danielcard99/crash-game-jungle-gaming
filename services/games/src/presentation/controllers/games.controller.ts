@@ -140,6 +140,8 @@ export class GamesController {
     return {
       serverSeed: round.serverSeed,
       serverSeedHash: round.serverSeedHash,
+      clientSeed: round.clientSeed,
+      nonce: round.nonce,
       crashPoint: round.crashPoint,
     };
   }

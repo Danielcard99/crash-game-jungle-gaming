@@ -32,6 +32,19 @@ export function ProvablyFairCard() {
               {isCrashed && crashSeeds ? crashSeeds.serverSeed : (serverSeedHash ?? "—")}
             </code>
           </div>
+          {isCrashed && crashSeeds && (
+            <div>
+              <p className="text-muted-foreground">Client seed revelada</p>
+              <code className="mt-1 block break-all rounded bg-muted px-2 py-1.5 font-mono text-[11px] text-muted-foreground">
+                {crashSeeds.clientSeed}
+              </code>
+            </div>
+          )}
+          {isCrashed && crashSeeds && (
+            <div className="flex gap-4">
+              <span className="text-muted-foreground">Nonce: <code className="font-mono text-primary">{crashSeeds.nonce}</code></span>
+            </div>
+          )}
           <div className="flex gap-2 pt-2">
             {roundId && isCrashed && (
               <a

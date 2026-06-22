@@ -68,6 +68,8 @@ function createRunningRound(): Round {
   const round = Round.create({
     serverSeed: "seed",
     serverSeedHash: "hash",
+      clientSeed: "client-fake",
+      nonce: 0,
     crashPoint: 2.0,
     bettingWindowSeconds: 10,
   });

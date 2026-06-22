@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { getSocket } from "@/lib/socket";
 import { useGameStore } from "@/stores/game.store";
@@ -23,6 +24,8 @@ const EV = {
 } as const;
 
 export function useGameSocket() {
+  const queryClient = useQueryClient();
+
   useEffect(() => {
     const socket = getSocket();
 
@@ -54,7 +57,13 @@ export function useGameSocket() {
     });
 
     socket.on(EV.ROUND_CRASHED, (data: WsRoundCrashed) => {
-      useGameStore.getState().setCrashed(data.crashPoint, data.serverSeed, data.serverSeedHash);
+      const store = useGameStore.getState();
+      const hadActiveBet = store.myActiveBet !== null;
+      store.setCrashed(data.crashPoint, data.serverSeed, data.serverSeedHash, data.clientSeed, data.nonce);
+      if (hadActiveBet) {
+        store.clearMyActiveBet();
+        queryClient.invalidateQueries({ queryKey: ["wallet"] });
+      }
     });
 
     socket.on(EV.BET_PLACED, (data: WsBetPlaced) => {
@@ -77,6 +86,7 @@ export function useGameSocket() {
       // myActiveBet still set means auto cashout — manual cashout clears it in onSuccess before this event arrives
       if (isMyBet && store.myActiveBet !== null) {
         store.clearMyActiveBet();
+        queryClient.invalidateQueries({ queryKey: ["wallet"] });
         toast.success("Saque automático realizado!", {
           description: `Você sacou em ${formatMultiplier(data.cashoutMultiplier)} · ${formatCurrency(data.payout)}`,
         });
@@ -89,5 +99,5 @@ export function useGameSocket() {
       socket.io.off("reconnect_failed", onReconnectFailed);
       Object.values(EV).forEach((ev) => socket.off(ev));
     };
-  }, []);
+  }, [queryClient]);
 }

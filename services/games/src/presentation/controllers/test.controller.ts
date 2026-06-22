@@ -5,7 +5,7 @@ import {
   type RoundRepository,
 } from "../../domain/round/round.repository";
 import { Round } from "../../domain/round/round.aggregate";
-import { hashSeed } from "../../domain/provably-fair/provably-fair.service";
+import { hashSeed, calculateCrashPoint } from "../../domain/provably-fair/provably-fair.service";
 
 @Controller("test")
 export class TestController {
@@ -16,12 +16,16 @@ export class TestController {
   @Post("seed-round")
   async seedRound() {
     const serverSeed = "test-seed-deterministic-e2e";
+    const clientSeed = "test-client-seed-e2e";
     const serverSeedHash = hashSeed(serverSeed);
-    const crashPoint = 1.5;
+    const nonce = 0;
+    const crashPoint = calculateCrashPoint(serverSeed, nonce, 1, clientSeed);
 
     const round = Round.create({
       serverSeed,
       serverSeedHash,
+      clientSeed,
+      nonce,
       crashPoint,
       bettingWindowSeconds: 10,
     });
@@ -32,6 +36,8 @@ export class TestController {
       roundId: round.id,
       crashPoint,
       serverSeedHash,
+      clientSeed,
+      nonce,
       bettingEndsAt: round.bettingEndsAt,
     };
   }

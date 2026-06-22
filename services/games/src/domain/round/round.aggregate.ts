@@ -6,6 +6,8 @@ export class Round {
     private _status: RoundStatus,
     private readonly _serverSeed: string,
     private readonly _serverSeedHash: string,
+    private readonly _clientSeed: string,
+    private readonly _nonce: number,
     private readonly _crashPoint: number,
     private readonly _bettingStartedAt: Date,
     private readonly _bettingEndsAt: Date,
@@ -18,6 +20,8 @@ export class Round {
   static create(params: {
     serverSeed: string;
     serverSeedHash: string;
+    clientSeed: string;
+    nonce: number;
     crashPoint: number;
     bettingWindowSeconds: number;
   }) {
@@ -31,6 +35,8 @@ export class Round {
       RoundStatus.BETTING,
       params.serverSeed,
       params.serverSeedHash,
+      params.clientSeed,
+      params.nonce,
       params.crashPoint,
       now,
       bettingEndsAt,
@@ -46,6 +52,8 @@ export class Round {
     status: RoundStatus;
     serverSeed: string;
     serverSeedHash: string;
+    clientSeed: string;
+    nonce: number;
     crashPoint: number;
     bettingStartedAt: Date;
     bettingEndsAt: Date;
@@ -59,6 +67,8 @@ export class Round {
       params.status,
       params.serverSeed,
       params.serverSeedHash,
+      params.clientSeed,
+      params.nonce,
       params.crashPoint,
       params.bettingStartedAt,
       params.bettingEndsAt,
@@ -119,6 +129,14 @@ export class Round {
 
   get serverSeedHash() {
     return this._serverSeedHash;
+  }
+
+  get clientSeed() {
+    return this._clientSeed;
+  }
+
+  get nonce() {
+    return this._nonce;
   }
 
   get crashPoint() {

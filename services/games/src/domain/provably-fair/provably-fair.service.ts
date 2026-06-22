@@ -11,14 +11,23 @@ export function generateServerSeed() {
   return randomBytes(32).toString("hex");
 }
 
+export function generateClientSeed() {
+  return randomBytes(16).toString("hex");
+}
+
 const MAX_HASH_VALUE = Math.pow(2, 52);
 
+// The HMAC message combines clientSeed and nonce so that neither the house
+// (who knows serverSeed) nor the player (who controls clientSeed) can alone
+// predict the crash point before the round starts.
 export function calculateCrashPoint(
-  seed: string,
+  serverSeed: string,
   nonce: number,
   houseEdgePercent: number,
+  clientSeed: string,
 ) {
-  const hash = createHmac("sha256", seed).update(String(nonce)).digest("hex");
+  const message = `${clientSeed}:${nonce}`;
+  const hash = createHmac("sha256", serverSeed).update(message).digest("hex");
   const hashAsInt = parseInt(hash.slice(0, 13), 16);
 
   if (hashAsInt % Math.floor(100 / houseEdgePercent) === 0) {
@@ -34,17 +43,19 @@ export function calculateCrashPoint(
 }
 
 export function verifyCrashPoint(
-  revealedSeed: string,
+  revealedServerSeed: string,
   publishedHash: string,
+  clientSeed: string,
   crashPoint: number,
   nonce: number,
   houseEdgePercent: number,
 ) {
-  const calculatedHash = hashSeed(revealedSeed);
+  const calculatedHash = hashSeed(revealedServerSeed);
   const calculatedCrashPoint = calculateCrashPoint(
-    revealedSeed,
+    revealedServerSeed,
     nonce,
     houseEdgePercent,
+    clientSeed,
   );
 
   if (calculatedHash !== publishedHash) {

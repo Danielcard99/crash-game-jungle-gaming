@@ -35,7 +35,7 @@ interface GameStore {
   multiplier: number;
   bettingEndsAt: number | null;
   crashPoint: Multiplier | null;
-  crashSeeds: { serverSeed: string; serverSeedHash: string } | null;
+  crashSeeds: { serverSeed: string; serverSeedHash: string; clientSeed: string; nonce: number } | null;
   liveBets: LiveBet[];
   myActiveBet: { amount: Cents; autoCashout: Multiplier | null } | null;
   socketConnected: boolean;
@@ -46,7 +46,7 @@ interface GameStore {
   setBetting: (roundId: string, bettingEndsAt: string, serverSeedHash: string) => void;
   setStarted: (roundId: string) => void;
   setMultiplier: (multiplier: Multiplier) => void;
-  setCrashed: (crashPoint: Multiplier, serverSeed: string, serverSeedHash: string) => void;
+  setCrashed: (crashPoint: Multiplier, serverSeed: string, serverSeedHash: string, clientSeed: string, nonce: number) => void;
   addBet: (bet: LiveBet) => void;
   applyBetCashout: (username: string, cashoutMultiplier: Multiplier, payout: Cents) => void;
   setMyActiveBet: (amount: Cents, autoCashout: Multiplier | null) => void;
@@ -106,13 +106,13 @@ export const useGameStore = create<GameStore>()((set) => ({
 
   setMultiplier: (multiplier) => set({ multiplier }),
 
-  setCrashed: (crashPoint, serverSeed, serverSeedHash) =>
+  setCrashed: (crashPoint, serverSeed, serverSeedHash, clientSeed, nonce) =>
     set((state) => ({
       phase: "crashed",
       crashPoint,
-      crashSeeds: { serverSeed, serverSeedHash },
+      crashSeeds: { serverSeed, serverSeedHash, clientSeed, nonce },
       seedHistory: [
-        { serverSeed, serverSeedHash, crashPoint },
+        { serverSeed, serverSeedHash, clientSeed, nonce, crashPoint, roundId: state.roundId ?? undefined },
         ...state.seedHistory,
       ].slice(0, 20),
       liveBets: state.liveBets.map((b) =>
