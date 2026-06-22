@@ -14,6 +14,7 @@ export class Bet {
     private _payout: Money | null,
     private readonly _placedAt: Date,
     private _cashedOutAt: Date | null,
+    private readonly _autoCashoutMultiplier: number | null,
   ) {}
 
   static create(params: {
@@ -21,6 +22,7 @@ export class Bet {
     playerId: string;
     playerUsername: string;
     amountBet: BetAmount;
+    autoCashoutMultiplier: number | null;
   }) {
     const now = new Date();
 
@@ -35,6 +37,7 @@ export class Bet {
       null,
       now,
       null,
+      params.autoCashoutMultiplier ?? null,
     );
   }
 
@@ -49,6 +52,7 @@ export class Bet {
     payout: Money | null;
     placedAt: Date;
     cashedOutAt: Date | null;
+    autoCashoutMultiplier: number | null;
   }) {
     return new Bet(
       params.id,
@@ -61,6 +65,7 @@ export class Bet {
       params.payout,
       params.placedAt,
       params.cashedOutAt,
+      params.autoCashoutMultiplier,
     );
   }
 
@@ -148,5 +153,9 @@ export class Bet {
 
   get cashedOutAt() {
     return this._cashedOutAt;
+  }
+
+  get autoCashoutMultiplier() {
+    return this._autoCashoutMultiplier;
   }
 }

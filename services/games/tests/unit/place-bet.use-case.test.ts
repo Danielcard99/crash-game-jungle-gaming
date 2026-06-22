@@ -174,4 +174,31 @@ describe("PlaceBetUseCase", () => {
       }),
     ).rejects.toThrow("Player already placed a bet in this round");
   });
+
+  it("cria a aposta com auto cashout quando informado", async () => {
+    const roundRepository = new FakeRoundRepository();
+    const betRepository = new FakeBetRepository();
+    const client = new FakeClientProxy();
+    const eventEmitter = new FakeEventEmitter2();
+
+    const round = createBettingRound();
+    await roundRepository.save(round);
+
+    const useCase = new PlaceBetUseCase(
+      roundRepository,
+      betRepository,
+      client,
+      eventEmitter,
+    );
+
+    const bet = await useCase.execute({
+      playerId: "player-1",
+      playerUsername: "tester",
+      amountInCents: 1000n,
+      autoCashoutMultiplier: 2.0,
+    });
+
+    expect(bet.status).toBe(BetStatus.PENDING);
+    expect(bet.autoCashoutMultiplier).toBe(2.0);
+  });
 });

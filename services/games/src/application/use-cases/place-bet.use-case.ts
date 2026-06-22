@@ -37,6 +37,7 @@ export class PlaceBetUseCase {
     playerId: string;
     playerUsername: string;
     amountInCents: bigint;
+    autoCashoutMultiplier?: number | null;
   }): Promise<Bet> {
     const round = await this.roundRepository.findCurrentBettingRound();
 
@@ -71,6 +72,7 @@ export class PlaceBetUseCase {
       playerId: params.playerId,
       playerUsername: params.playerUsername,
       amountBet,
+      autoCashoutMultiplier: params.autoCashoutMultiplier ?? null,
     });
 
     await this.betRepository.save(bet);

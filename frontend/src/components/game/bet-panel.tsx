@@ -23,6 +23,8 @@ export function BetPanel() {
   const phase = useGameStore((s) => s.phase);
   const myActiveBet = useGameStore((s) => s.myActiveBet);
   const roundNumber = useGameStore((s) => s.roundNumber);
+  const autoCashoutEnabled = useGameStore((s) => s.autoCashoutEnabled);
+  const setAutoCashoutEnabled = useGameStore((s) => s.setAutoCashoutEnabled);
 
   const authState = useAuthStore();
   const { data: wallet } = useWallet();
@@ -54,9 +56,9 @@ export function BetPanel() {
       });
       return;
     }
-    const autoCashout = parseFloat(autoCashoutInput.replace(",", "."));
+    const autoCashout = autoCashoutEnabled ? parseFloat(autoCashoutInput.replace(",", ".")) : undefined;
     placeBet.mutate(
-      { amount: amountCents, autoCashout: autoCashout > 1 ? autoCashout : undefined },
+      { amount: amountCents, autoCashout: autoCashout && autoCashout >= 1.01 ? autoCashout : undefined },
       {
         onSuccess: () =>
           toast.success("Aposta confirmada!", {
@@ -117,7 +119,7 @@ export function BetPanel() {
           type="button"
           onClick={() => setBetInput((b) => Math.max(1, Math.round(b / 2)))}
           disabled={!canBet}
-          className="rounded border border-border px-2 py-0.5 text-xs disabled:opacity-40"
+          className="cursor-pointer rounded border border-border px-2 py-0.5 text-xs disabled:opacity-40"
         >
           ½
         </button>
@@ -125,7 +127,7 @@ export function BetPanel() {
           type="button"
           onClick={() => setBetInput((b) => Math.min(1000, b * 2))}
           disabled={!canBet}
-          className="rounded border border-border px-2 py-0.5 text-xs disabled:opacity-40"
+          className="cursor-pointer rounded border border-border px-2 py-0.5 text-xs disabled:opacity-40"
         >
           2×
         </button>
@@ -139,7 +141,7 @@ export function BetPanel() {
             type="button"
             onClick={() => setBetInput(v)}
             disabled={!canBet}
-            className="rounded-md border border-border bg-background py-1.5 font-mono text-sm transition hover:border-primary disabled:opacity-40"
+            className="cursor-pointer rounded-md border border-border bg-background py-1.5 font-mono text-sm transition hover:border-primary disabled:opacity-40"
           >
             {v}
           </button>
@@ -147,18 +149,31 @@ export function BetPanel() {
       </div>
 
       <div className="mt-4">
-        <label
-          htmlFor="auto-cashout"
-          className="text-xs uppercase tracking-wider text-muted-foreground"
-        >
-          Saque automático em
-        </label>
+        <div className="mb-2 flex items-center justify-between">
+          <label
+            htmlFor="auto-cashout"
+            className="text-xs uppercase tracking-wider text-muted-foreground"
+          >
+            Saque automático em
+          </label>
+          <button
+            type="button"
+            onClick={() => setAutoCashoutEnabled(!autoCashoutEnabled)}
+            className={`cursor-pointer rounded-full px-3 py-1 text-[11px] font-semibold uppercase transition ${
+              autoCashoutEnabled
+                ? "bg-success/20 text-success"
+                : "bg-muted text-muted-foreground hover:bg-border"
+            }`}
+          >
+            {autoCashoutEnabled ? "ON" : "OFF"}
+          </button>
+        </div>
         <div className="mt-2 flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-2">
           <input
             id="auto-cashout"
             value={autoCashoutInput}
             onChange={(e) => setAutoCashoutInput(e.target.value)}
-            disabled={!!myActiveBet}
+            disabled={!!myActiveBet || !autoCashoutEnabled}
             className="w-full bg-transparent font-mono text-lg outline-none disabled:opacity-50"
           />
           <span className="font-mono text-muted-foreground">x</span>
@@ -171,7 +186,7 @@ export function BetPanel() {
           type="button"
           onClick={handleBet}
           disabled={!canBet || placeBet.isPending}
-          className="mt-5 w-full rounded-xl bg-[image:var(--gradient-rocket)] py-4 font-display text-lg font-bold text-primary-foreground shadow-glow transition hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-50"
+          className="mt-5 w-full cursor-pointer rounded-xl bg-[image:var(--gradient-rocket)] py-4 font-display text-lg font-bold text-primary-foreground shadow-glow transition hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {placeBet.isPending
             ? "Aguardando…"
@@ -187,7 +202,7 @@ export function BetPanel() {
           type="button"
           onClick={handleCashout}
           disabled={!canCashout || cashout.isPending}
-          className="mt-2 flex w-full items-center justify-between rounded-xl border-2 border-success bg-success/15 px-5 py-4 font-display font-bold text-success shadow-accent-glow transition hover:bg-success/25 disabled:cursor-not-allowed disabled:opacity-50"
+          className="mt-2 flex w-full cursor-pointer items-center justify-between rounded-xl border-2 border-success bg-success/15 px-5 py-4 font-display font-bold text-success shadow-accent-glow transition hover:bg-success/25 disabled:cursor-not-allowed disabled:opacity-50"
         >
           <span className="text-lg">{cashout.isPending ? "SACANDO…" : "SACAR"}</span>
           <span className="font-mono text-xl">

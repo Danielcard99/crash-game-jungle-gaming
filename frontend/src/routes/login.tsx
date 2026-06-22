@@ -67,7 +67,7 @@ function LoginPage() {
           <button
             onClick={handleKeycloak}
             disabled={loading}
-            className="mt-6 flex w-full items-center justify-center gap-3 rounded-xl bg-[image:var(--gradient-rocket)] py-4 font-display text-base font-bold text-primary-foreground shadow-glow transition hover:opacity-95 disabled:opacity-60"
+            className="mt-6 flex w-full cursor-pointer items-center justify-center gap-3 rounded-xl bg-[image:var(--gradient-rocket)] py-4 font-display text-base font-bold text-primary-foreground shadow-glow transition hover:opacity-95 disabled:opacity-60"
           >
             {loading ? (
               <>

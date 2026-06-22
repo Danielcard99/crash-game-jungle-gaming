@@ -2,6 +2,8 @@ import { useEffect } from "react";
 import { toast } from "sonner";
 import { getSocket } from "@/lib/socket";
 import { useGameStore } from "@/stores/game.store";
+import { useAuthStore } from "@/stores/auth.store";
+import { formatCurrency, formatMultiplier } from "@/lib/format";
 import type {
   WsRoundBetting,
   WsRoundStarted,
@@ -67,9 +69,18 @@ export function useGameSocket() {
     });
 
     socket.on(EV.BET_CASHOUT, (data: WsBetCashedOut) => {
-      useGameStore
-        .getState()
-        .applyBetCashout(data.playerUsername, data.cashoutMultiplier, data.payout);
+      const store = useGameStore.getState();
+      store.applyBetCashout(data.playerUsername, data.cashoutMultiplier, data.payout);
+
+      const currentUser = useAuthStore.getState().user;
+      const isMyBet = currentUser?.preferred_username === data.playerUsername;
+      // myActiveBet still set means auto cashout — manual cashout clears it in onSuccess before this event arrives
+      if (isMyBet && store.myActiveBet !== null) {
+        store.clearMyActiveBet();
+        toast.success("Saque automático realizado!", {
+          description: `Você sacou em ${formatMultiplier(data.cashoutMultiplier)} · ${formatCurrency(data.payout)}`,
+        });
+      }
     });
 
     return () => {

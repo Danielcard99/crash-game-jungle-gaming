@@ -16,7 +16,7 @@ export function usePlaceBet() {
     mutationFn: (payload: PlaceBetPayload) =>
       api.post<Bet>("/games/bet", {
         amountInCents: payload.amount,
-        ...(payload.autoCashout !== undefined ? { autoCashout: payload.autoCashout } : {}),
+        autoCashoutMultiplier: payload.autoCashout ?? null,
       }),
     onSuccess: (_, variables) => {
       setMyActiveBet(variables.amount, variables.autoCashout ?? null);

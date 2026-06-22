@@ -30,17 +30,18 @@ enum RoundStatus {
 }
 
 model Bet {
-  id                String    @id @default(uuid())
-  roundId           String
-  playerId          String
-  playerUsername    String
-  amountBet         Decimal
-  status            BetStatus
-  cashoutMultiplier Decimal?
-  payout            Decimal?
-  placedAt          DateTime
-  cashedOutAt       DateTime?
-  round             Round     @relation(fields: [roundId], references: [id])
+  id                    String    @id @default(uuid())
+  roundId               String
+  playerId              String
+  playerUsername        String
+  amountBet             Decimal
+  status                BetStatus
+  cashoutMultiplier     Decimal?
+  payout                Decimal?
+  placedAt              DateTime
+  cashedOutAt           DateTime?
+  autoCashoutMultiplier Decimal?
+  round                 Round     @relation(fields: [roundId], references: [id])
 
   @@index([playerId])
 }

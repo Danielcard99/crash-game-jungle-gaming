@@ -78,7 +78,7 @@ export const MultiplierDisplay = memo(function MultiplierDisplay() {
                   .catch(() => {});
               }
             }}
-            className="text-muted-foreground hover:text-foreground"
+            className="cursor-pointer text-muted-foreground hover:text-foreground"
           >
             ⎘
           </button>
