@@ -28,6 +28,18 @@ class FakeBetRepository implements BetRepository {
       null
     );
   }
+
+  async findActiveBetByPlayerId(playerId: string): Promise<Bet | null> {
+    return this.bets.find((b) => b.playerId === playerId && b.status === "ACTIVE" as any) ?? null;
+  }
+
+  async findActiveBetsByRoundId(roundId: string): Promise<Bet[]> {
+    return this.bets.filter((b) => b.roundId === roundId && b.status === "ACTIVE" as any);
+  }
+
+  async findAllByPlayerId(playerId: string): Promise<Bet[]> {
+    return this.bets.filter((b) => b.playerId === playerId);
+  }
 }
 
 describe("ProcessBetRejectedUseCase", () => {
@@ -38,6 +50,7 @@ describe("ProcessBetRejectedUseCase", () => {
       playerId: "player-1",
       playerUsername: "tester",
       amountBet: BetAmount.create(1000n),
+      autoCashoutMultiplier: null,
     });
     await repository.save(bet);
 

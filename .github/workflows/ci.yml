@@ -21,6 +21,14 @@ jobs:
       - name: Install dependencies
         run: bun install
 
+      - name: Generate Prisma client — Games
+        run: DATABASE_URL="postgresql://placeholder/placeholder" bunx prisma generate
+        working-directory: services/games
+
+      - name: Generate Prisma client — Wallets
+        run: DATABASE_URL="postgresql://placeholder/placeholder" bunx prisma generate
+        working-directory: services/wallets
+
       - name: Test — Games Service
         run: bun test tests/unit
         working-directory: services/games
@@ -46,6 +54,14 @@ jobs:
 
       - name: Install dependencies
         run: bun install
+
+      - name: Generate Prisma client — Games
+        run: DATABASE_URL="postgresql://placeholder/placeholder" bunx prisma generate
+        working-directory: services/games
+
+      - name: Generate Prisma client — Wallets
+        run: DATABASE_URL="postgresql://placeholder/placeholder" bunx prisma generate
+        working-directory: services/wallets
 
       - name: Typecheck — Games Service
         run: bunx tsc --noEmit

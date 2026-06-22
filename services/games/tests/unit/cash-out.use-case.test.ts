@@ -46,6 +46,10 @@ class FakeBetRepository implements BetRepository {
       (b) => b.roundId === roundId && b.status === BetStatus.ACTIVE,
     );
   }
+
+  async findAllByPlayerId(playerId: string): Promise<Bet[]> {
+    return this.bets.filter((b) => b.playerId === playerId);
+  }
 }
 
 class FakeClientProxy implements EventPublisher {
@@ -77,6 +81,7 @@ describe("CashOutUseCase", () => {
       playerId: "player-1",
       playerUsername: "tester",
       amountBet: BetAmount.create(1000n),
+      autoCashoutMultiplier: null,
     });
     bet.confirm();
     await betRepository.save(bet);

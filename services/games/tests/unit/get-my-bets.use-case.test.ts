@@ -56,18 +56,21 @@ describe("GetMyBetsUseCase", () => {
       playerId: "player-1",
       playerUsername: "tester",
       amountBet: BetAmount.create(1000n),
+      autoCashoutMultiplier: null,
     });
     const bet2 = Bet.create({
       roundId: "round-2",
       playerId: "player-1",
       playerUsername: "tester",
       amountBet: BetAmount.create(2000n),
+      autoCashoutMultiplier: null,
     });
     const otherPlayerBet = Bet.create({
       roundId: "round-1",
       playerId: "player-2",
       playerUsername: "other",
       amountBet: BetAmount.create(500n),
+      autoCashoutMultiplier: null,
     });
 
     await betRepository.save(bet1);

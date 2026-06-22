@@ -25,6 +25,14 @@ class FakeRoundRepository implements RoundRepository {
   async findCurrentBettingRound(): Promise<Round | null> {
     return this.rounds.find((r) => r.status === RoundStatus.BETTING) ?? null;
   }
+
+  async findLatestUnsettledRound(): Promise<Round | null> {
+    return this.rounds.find((r) => r.status !== RoundStatus.SETTLED) ?? null;
+  }
+
+  async findSettledRounds(limit: number): Promise<Round[]> {
+    return this.rounds.filter((r) => r.status === RoundStatus.SETTLED).slice(0, limit);
+  }
 }
 
 class FakeBetRepository implements BetRepository {
@@ -62,6 +70,10 @@ class FakeBetRepository implements BetRepository {
     return this.bets.filter(
       (b) => b.roundId === roundId && b.status === BetStatus.ACTIVE,
     );
+  }
+
+  async findAllByPlayerId(playerId: string): Promise<Bet[]> {
+    return this.bets.filter((b) => b.playerId === playerId);
   }
 }
 
@@ -158,6 +170,7 @@ describe("PlaceBetUseCase", () => {
       playerId: "player-1",
       playerUsername: "tester",
       amountBet: BetAmount.create(1000n),
+      autoCashoutMultiplier: null,
     });
     await betRepository.save(existingBet);
 
