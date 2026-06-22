@@ -9,6 +9,8 @@ describe("RoundMapper.toPersistence", () => {
     const round = Round.create({
       serverSeed: "seed-fake",
       serverSeedHash: "hash-fake",
+      clientSeed: "client-fake",
+      nonce: 0,
       crashPoint: 2.5,
       bettingWindowSeconds: 10,
     });
@@ -27,6 +29,8 @@ describe("RoundMapper.toDomain", () => {
       status: RoundStatus.BETTING,
       serverSeed: "seed-fake",
       serverSeedHash: "hash-fake",
+      clientSeed: "client-fake",
+      nonce: 0,
       crashPoint: new Decimal(2.5),
       bettingStartedAt: now,
       bettingEndsAt: new Date(now.getTime() + 10000),

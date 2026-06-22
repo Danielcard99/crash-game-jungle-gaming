@@ -11,6 +11,7 @@ import {
 import { Round } from "../../domain/round/round.aggregate";
 import {
   generateServerSeed,
+  generateClientSeed,
   hashSeed,
   calculateCrashPoint,
 } from "../../domain/provably-fair/provably-fair.service";
@@ -56,15 +57,19 @@ export class RoundEngineService implements OnModuleInit {
     } else {
       const serverSeed = generateServerSeed();
       const serverSeedHash = hashSeed(serverSeed);
+      const clientSeed = generateClientSeed();
       const crashPoint = calculateCrashPoint(
         serverSeed,
         this.NONCE,
         this.HOUSE_EDGE_PERCENT,
+        clientSeed,
       );
 
       round = Round.create({
         serverSeed,
         serverSeedHash,
+        clientSeed,
+        nonce: this.NONCE,
         crashPoint,
         bettingWindowSeconds: this.BETTING_WINDOW_SECONDS,
       });
@@ -105,6 +110,8 @@ export class RoundEngineService implements OnModuleInit {
           crashPoint: round.crashPoint,
           serverSeed: round.serverSeed,
           serverSeedHash: round.serverSeedHash,
+          clientSeed: round.clientSeed,
+          nonce: round.nonce,
         });
 
         return;

@@ -18,13 +18,15 @@ export async function getAuthToken(): Promise<string> {
   return data.access_token;
 }
 
-export async function seedRound(): Promise<{
+export async function seedRound(opts?: { crashPoint?: number }): Promise<{
   roundId: string;
   crashPoint: number;
   bettingEndsAt: string;
 }> {
   const res = await fetch("http://localhost:4001/test/seed-round", {
     method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(opts ?? {}),
   });
   return res.json();
 }

@@ -11,6 +11,7 @@ describe("Bet.create", () => {
       playerId: "user-id-fake",
       amountBet: BetAmount.create(1000n),
       playerUsername: "player-username-fake",
+      autoCashoutMultiplier: null,
     });
     expect(bet.status).toBe(BetStatus.PENDING);
   });
@@ -22,6 +23,7 @@ describe("Bet.create", () => {
       playerId: "user-id-fake",
       amountBet: betAmount,
       playerUsername: "player-username-fake",
+      autoCashoutMultiplier: null,
     });
     expect(bet.amountBet).toBe(betAmount);
   });
@@ -34,6 +36,7 @@ describe("Bet.confirm", () => {
       playerId: "user-id-fake",
       amountBet: BetAmount.create(1000n),
       playerUsername: "player-username-fake",
+      autoCashoutMultiplier: null,
     });
     bet.confirm();
     expect(bet.status).toBe(BetStatus.ACTIVE);
@@ -45,6 +48,7 @@ describe("Bet.confirm", () => {
       playerId: "user-id-fake",
       amountBet: BetAmount.create(1000n),
       playerUsername: "player-username-fake",
+      autoCashoutMultiplier: null,
     });
     bet.confirm();
     expect(() => bet.confirm()).toThrow(
@@ -60,6 +64,7 @@ describe("Bet.reject", () => {
       playerId: "user-id-fake",
       amountBet: BetAmount.create(1000n),
       playerUsername: "player-username-fake",
+      autoCashoutMultiplier: null,
     });
     bet.reject();
     expect(bet.status).toBe(BetStatus.REJECTED);
@@ -71,6 +76,7 @@ describe("Bet.reject", () => {
       playerId: "user-id-fake",
       amountBet: BetAmount.create(1000n),
       playerUsername: "player-username-fake",
+      autoCashoutMultiplier: null,
     });
     bet.confirm();
     expect(() => bet.reject()).toThrow(
@@ -88,6 +94,7 @@ describe("Bet.cashOut", () => {
       playerId: "user-id-fake",
       amountBet: BetAmount.create(1000n),
       playerUsername: "player-username-fake",
+      autoCashoutMultiplier: null,
     });
     bet.confirm();
   });
@@ -117,6 +124,7 @@ describe("Bet.markAsLost", () => {
       playerId: "user-id-fake",
       amountBet: BetAmount.create(1000n),
       playerUsername: "player-username-fake",
+      autoCashoutMultiplier: null,
     });
     bet.confirm();
   });
@@ -147,6 +155,7 @@ describe("Bet.reconstitute", () => {
       payout: Money.fromCents(2350n),
       placedAt: new Date(),
       cashedOutAt: new Date(),
+      autoCashoutMultiplier: null,
     });
 
     expect(bet.status).toBe(BetStatus.CASHED_OUT);

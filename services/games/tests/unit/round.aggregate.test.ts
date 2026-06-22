@@ -7,6 +7,8 @@ describe("Round.create", () => {
     const round = Round.create({
       serverSeed: "seed-fake",
       serverSeedHash: "hash-fake",
+      clientSeed: "client-fake",
+      nonce: 0,
       crashPoint: 2.35,
       bettingWindowSeconds: 10,
     });
@@ -21,6 +23,8 @@ describe("Round.startRunning", () => {
     round = Round.create({
       serverSeed: "seed-fake",
       serverSeedHash: "hash-fake",
+      clientSeed: "client-fake",
+      nonce: 0,
       crashPoint: 2.35,
       bettingWindowSeconds: 10,
     });
@@ -46,6 +50,8 @@ describe("Round.crash", () => {
     round = Round.create({
       serverSeed: "seed-fake",
       serverSeedHash: "hash-fake",
+      clientSeed: "client-fake",
+      nonce: 0,
       crashPoint: 2.35,
       bettingWindowSeconds: 10,
     });
@@ -70,6 +76,8 @@ describe("Round.settle", () => {
     round = Round.create({
       serverSeed: "seed-fake",
       serverSeedHash: "hash-fake",
+      clientSeed: "client-fake",
+      nonce: 0,
       crashPoint: 2.35,
       bettingWindowSeconds: 10,
     });
@@ -95,6 +103,8 @@ describe("Round.reconstitute", () => {
       status: RoundStatus.CRASHED,
       serverSeed: "seed-fake",
       serverSeedHash: "hash-fake",
+      clientSeed: "client-fake",
+      nonce: 0,
       crashPoint: 2.35,
       bettingStartedAt: new Date(),
       bettingEndsAt: new Date(),

@@ -12,6 +12,7 @@ describe("BetMapper.toPersistence", () => {
       playerId: "user-id-fake",
       amountBet: BetAmount.create(1000n),
       playerUsername: "player-username-fake",
+      autoCashoutMultiplier: null,
     });
     const persisted = BetMapper.toPersistence(bet);
 
@@ -33,6 +34,7 @@ describe("BetMapper.toDomain", () => {
       payout: new Decimal(2350),
       placedAt: new Date(),
       cashedOutAt: new Date(),
+      autoCashoutMultiplier: null,
     };
 
     const bet = BetMapper.toDomain(persisted);

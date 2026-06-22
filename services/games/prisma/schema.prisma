@@ -12,6 +12,8 @@ model Round {
   status           RoundStatus
   serverSeed       String
   serverSeedHash   String
+  clientSeed       String
+  nonce            Int         @default(0)
   crashPoint       Decimal
   bettingStartedAt DateTime
   bettingEndsAt    DateTime
