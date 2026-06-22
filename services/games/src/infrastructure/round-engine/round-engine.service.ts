@@ -4,6 +4,10 @@ import {
   ROUND_REPOSITORY,
   type RoundRepository,
 } from "../../domain/round/round.repository";
+import {
+  BET_REPOSITORY,
+  type BetRepository,
+} from "../../domain/bet/bet.repository";
 import { Round } from "../../domain/round/round.aggregate";
 import {
   generateServerSeed,
@@ -12,6 +16,7 @@ import {
 } from "../../domain/provably-fair/provably-fair.service";
 import { calculateCurrentMultiplier } from "../../domain/round/multiplier-calculator";
 import { HandleRoundCrashUseCase } from "../../application/use-cases/handle-round-crash.use-case";
+import { CashOutUseCase } from "../../application/use-cases/cash-out.use-case";
 
 @Injectable()
 export class RoundEngineService implements OnModuleInit {
@@ -22,8 +27,10 @@ export class RoundEngineService implements OnModuleInit {
 
   constructor(
     @Inject(ROUND_REPOSITORY) private readonly roundRepository: RoundRepository,
+    @Inject(BET_REPOSITORY) private readonly betRepository: BetRepository,
     private readonly handleRoundCrashUseCase: HandleRoundCrashUseCase,
     private readonly eventEmitter: EventEmitter2,
+    private readonly cashOutUseCase: CashOutUseCase,
   ) {}
 
   onModuleInit() {
@@ -101,6 +108,36 @@ export class RoundEngineService implements OnModuleInit {
         });
 
         return;
+      }
+
+      // Verifica auto cashout para apostas ativas
+      const activeBets = await this.betRepository.findActiveBetsByRoundId(
+        round.id,
+      );
+      for (const bet of activeBets) {
+        if (
+          bet.autoCashoutMultiplier !== null &&
+          currentMultiplier >= bet.autoCashoutMultiplier
+        ) {
+          try {
+            await this.cashOutUseCase.execute({
+              playerId: bet.playerId,
+              currentMultiplier: bet.autoCashoutMultiplier,
+            });
+
+            this.eventEmitter.emit("bet.cashedOut", {
+              roundId: round.id,
+              playerUsername: bet.playerUsername,
+              cashoutMultiplier: bet.autoCashoutMultiplier,
+              payout: Number(
+                bet.amountBet.toMoney().multiply(bet.autoCashoutMultiplier)
+                  .valueInCents,
+              ),
+            });
+          } catch {
+            // aposta já foi sacada ou não existe mais — ignora
+          }
+        }
       }
 
       this.eventEmitter.emit("round.tick", {

@@ -17,6 +17,7 @@ export class BetMapper {
       payout: bet.payout ? Number(bet.payout.valueInCents) : null,
       placedAt: bet.placedAt,
       cashedOutAt: bet.cashedOutAt,
+      autoCashoutMultiplier: bet.autoCashoutMultiplier,
     };
   }
 
@@ -36,6 +37,9 @@ export class BetMapper {
         : null,
       placedAt: raw.placedAt,
       cashedOutAt: raw.cashedOutAt,
+      autoCashoutMultiplier: raw.autoCashoutMultiplier
+        ? Number(raw.autoCashoutMultiplier)
+        : null,
     });
   }
 }

@@ -8,7 +8,10 @@
   "scripts": {
     "docker:up": "docker compose up",
     "docker:down": "docker compose down",
-    "docker:prune": "docker compose down -v --rmi all --remove-orphans && docker volume prune -f"
+    "docker:prune": "docker compose down -v --rmi all --remove-orphans && docker volume prune -f",
+    "test": "cd services/games && bun test tests/unit && cd ../wallets && bun test tests/unit",
+    "test:e2e": "docker compose -f docker-compose.yml -f docker-compose.test.yml up -d && cd services/games && bun test tests/e2e",
+    "test:coverage": "cd services/games && bun test tests/unit --coverage && cd ../wallets && bun test tests/unit --coverage"
   },
   "devDependencies": {
     "bun-types": "latest"

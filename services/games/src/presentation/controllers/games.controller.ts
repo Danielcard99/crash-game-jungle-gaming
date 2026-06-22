@@ -55,6 +55,7 @@ export class GamesController {
       playerId: user.userId,
       playerUsername: user.username,
       amountInCents: BigInt(body.amountInCents),
+      autoCashoutMultiplier: body.autoCashoutMultiplier ?? null,
     });
 
     return {
