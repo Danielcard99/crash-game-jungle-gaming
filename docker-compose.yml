@@ -114,7 +114,7 @@ services:
       test:
         [
           "CMD-SHELL",
-          'bun -e "fetch(''http://localhost:4001/health'').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"',
+          'bun -e "fetch(''http://localhost:4001/games/health'').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"',
         ]
       interval: 10s
       timeout: 5s
@@ -141,7 +141,7 @@ services:
       test:
         [
           "CMD-SHELL",
-          'bun -e "fetch(''http://localhost:4002/health'').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"',
+          'bun -e "fetch(''http://localhost:4002/wallets/health'').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"',
         ]
       interval: 10s
       timeout: 5s
@@ -166,6 +166,22 @@ services:
     depends_on:
       kong:
         condition: service_healthy
+
+  # ---------------------------------------------------------------------------
+  # Seed
+  # ---------------------------------------------------------------------------
+
+  seed:
+    image: curlimages/curl:latest
+    depends_on:
+      keycloak:
+        condition: service_healthy
+      wallets:
+        condition: service_healthy
+    volumes:
+      - ./docker/scripts/seed-wallet.sh:/seed.sh
+    entrypoint: ["sh", "/seed.sh"]
+    restart: "no"
 
 volumes:
   postgres_data:

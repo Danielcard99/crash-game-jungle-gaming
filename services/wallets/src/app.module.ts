@@ -9,6 +9,7 @@ import { ProcessBetPlacedUseCase } from "./application/use-cases/process-bet-pla
 import { CreateWalletUseCase } from "./application/use-cases/create-wallet.use-case";
 import { AuthModule } from "./infrastructure/auth/auth.module";
 import { GetWalletUseCase } from "./application/use-cases/get-wallet.use-case";
+import { SeedWalletUseCase } from "./application/use-cases/seed-wallet.use-case";
 
 @Module({
   controllers: [WalletsController, BetEventsController],
@@ -18,6 +19,7 @@ import { GetWalletUseCase } from "./application/use-cases/get-wallet.use-case";
     ProcessBetWonUseCase,
     CreateWalletUseCase,
     GetWalletUseCase,
+    SeedWalletUseCase,
   ],
 })
 export class AppModule {}
