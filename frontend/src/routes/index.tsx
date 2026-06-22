@@ -147,17 +147,6 @@ function Index() {
               ROCKET<span className="text-gradient-multiplier">CRASH</span>
             </span>
           </div>
-          <nav className="hidden items-center gap-8 text-sm text-muted-foreground md:flex">
-            <a className="hover:text-foreground" href="#">
-              Jogar
-            </a>
-            <a className="hover:text-foreground" href="#">
-              Histórico
-            </a>
-            <a className="hover:text-foreground" href="#">
-              Suporte
-            </a>
-          </nav>
           <div className="flex items-center gap-3">
             {authState.isAuthenticated && authState.user ? (
               <>
@@ -260,9 +249,6 @@ function Index() {
                       : game.phase === "crashed"
                         ? "CRASHOU"
                         : "AGUARDANDO"}
-                </span>
-                <span className="text-xs text-muted-foreground">
-                  Rodada {roundLabel}
                 </span>
               </div>
               <div className="flex items-center gap-2 text-xs">

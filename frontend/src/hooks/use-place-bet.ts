@@ -14,7 +14,10 @@ export function usePlaceBet() {
 
   return useMutation({
     mutationFn: (payload: PlaceBetPayload) =>
-      api.post<Bet>("/games/bet", payload),
+      api.post<Bet>("/games/bet", {
+        amountInCents: payload.amount,
+        ...(payload.autoCashout !== undefined ? { autoCashout: payload.autoCashout } : {}),
+      }),
     onSuccess: (_, variables) => {
       setMyActiveBet(variables.amount, variables.autoCashout ?? null);
       queryClient.invalidateQueries({ queryKey: ["wallet"] });
