@@ -1,4 +1,13 @@
 _format_version: "3.0"
+plugins:
+  # Global rate limit: 120 req/min per IP across all routes
+  - name: rate-limiting
+    config:
+      minute: 120
+      policy: local
+      limit_by: ip
+      hide_client_headers: false
+
 services:
   - name: games-service
     url: http://games:4001
@@ -27,6 +36,13 @@ services:
           exposed_headers:
             - Authorization
           credentials: true
+      # Stricter limit on bet endpoints to prevent bet spamming
+      - name: rate-limiting
+        config:
+          minute: 30
+          policy: local
+          limit_by: ip
+          hide_client_headers: false
 
   - name: wallets-service
     url: http://wallets:4002
@@ -51,3 +67,9 @@ services:
           exposed_headers:
             - Authorization
           credentials: true
+      - name: rate-limiting
+        config:
+          minute: 30
+          policy: local
+          limit_by: ip
+          hide_client_headers: false
