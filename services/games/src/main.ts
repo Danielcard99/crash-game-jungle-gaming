@@ -1,7 +1,7 @@
 import "reflect-metadata";
 import { NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module";
-import { MicroserviceOptions, Transport } from "@nestjs/microservices";
+import { MicroserviceOptions } from "@nestjs/microservices";
 import { createRabbitMQOptions } from "@crash/rabbitmq-kit";
 
 async function bootstrap(): Promise<void> {
@@ -19,7 +19,7 @@ async function bootstrap(): Promise<void> {
 
   await app.startAllMicroservices();
 
-  const port = process.env.PORT;
+  const port = Number(process.env.PORT ?? 4001);
 
   await app.listen(port, "0.0.0.0");
 

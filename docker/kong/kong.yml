@@ -1,5 +1,4 @@
 _format_version: "3.0"
-
 services:
   - name: games-service
     url: http://games:4001
@@ -7,7 +6,11 @@ services:
       - name: games-routes
         paths:
           - /games
-        strip_path: true
+        strip_path: false
+      - name: games-websocket
+        paths:
+          - /socket.io
+        strip_path: false
 
   - name: wallets-service
     url: http://wallets:4002
@@ -15,4 +18,4 @@ services:
       - name: wallets-routes
         paths:
           - /wallets
-        strip_path: true
+        strip_path: false

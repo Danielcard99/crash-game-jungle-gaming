@@ -9,7 +9,7 @@ import {
 } from "@crash/auth-kit";
 import { GetWalletUseCase } from "../../application/use-cases/get-wallet.use-case";
 
-@Controller()
+@Controller("wallets")
 export class WalletsController {
   constructor(
     private readonly createWalletUseCase: CreateWalletUseCase,
@@ -21,7 +21,7 @@ export class WalletsController {
     return { status: "ok", service: "wallets" };
   }
 
-  @Post("wallets")
+  @Post()
   @UseGuards(JwtAuthGuard)
   async createWallet(
     @CurrentUser() user: AuthenticatedUser,
@@ -37,6 +37,7 @@ export class WalletsController {
     };
   }
 
+  @Get("me")
   @UseGuards(JwtAuthGuard)
   async getMyWallet(
     @CurrentUser() user: AuthenticatedUser,

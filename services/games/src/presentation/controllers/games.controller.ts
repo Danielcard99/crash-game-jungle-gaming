@@ -20,7 +20,7 @@ import { GetRoundHistoryUseCase } from "../../application/use-cases/get-round-hi
 import { RoundVerifyResponseDto } from "../dtos/round-verify-response.dto";
 import { VerifyRoundUseCase } from "../../application/use-cases/verify-round.use-case";
 
-@Controller()
+@Controller('games')
 export class GamesController {
   constructor(
     private readonly placeBetUseCase: PlaceBetUseCase,
@@ -36,7 +36,7 @@ export class GamesController {
     return { status: "ok", service: "games" };
   }
 
-  @Post("games/bet")
+  @Post("bet")
   @UseGuards(JwtAuthGuard)
   async placeBet(
     @CurrentUser() user: AuthenticatedUser,
@@ -56,7 +56,7 @@ export class GamesController {
     };
   }
 
-  @Post("games/bet/cashout")
+  @Post("bet/cashout")
   @UseGuards(JwtAuthGuard)
   async cashOut(
     @CurrentUser() user: AuthenticatedUser,
@@ -77,7 +77,7 @@ export class GamesController {
     };
   }
 
-  @Get("games/bets/me")
+  @Get("bets/me")
   @UseGuards(JwtAuthGuard)
   async getMyBets(
     @CurrentUser() user: AuthenticatedUser,
@@ -94,7 +94,7 @@ export class GamesController {
     }));
   }
 
-  @Get("games/rounds/current")
+  @Get("rounds/current")
   async getCurrentRound(): Promise<RoundResponseDto> {
     const round = await this.getCurrentRoundUseCase.execute();
 
@@ -108,7 +108,7 @@ export class GamesController {
     };
   }
 
-  @Get("games/rounds/history")
+  @Get("rounds/history")
   async getRoundHistory(): Promise<RoundHistoryResponseDto[]> {
     const rounds = await this.getRoundHistoryUseCase.execute();
 
@@ -119,7 +119,7 @@ export class GamesController {
     }));
   }
 
-  @Get("games/rounds/:roundId/verify")
+  @Get("rounds/:roundId/verify")
   async verifyRound(
     @Param("roundId") roundId: string,
   ): Promise<RoundVerifyResponseDto> {

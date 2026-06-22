@@ -22,8 +22,10 @@ async function bootstrap(): Promise<void> {
 
   app.useGlobalPipes(new ZodValidationPipe());
 
-  const port = process.env.PORT;
+  const port = Number(process.env.PORT ?? 4002);
+
   await app.listen(port, "0.0.0.0");
+
   console.log(`Wallets service running on port ${port}`);
 }
 
