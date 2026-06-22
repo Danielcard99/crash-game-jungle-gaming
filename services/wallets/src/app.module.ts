@@ -8,6 +8,7 @@ import { ProcessBetWonUseCase } from "./application/use-cases/process-bet-won.us
 import { ProcessBetPlacedUseCase } from "./application/use-cases/process-bet-placed.use-case";
 import { CreateWalletUseCase } from "./application/use-cases/create-wallet.use-case";
 import { AuthModule } from "./infrastructure/auth/auth.module";
+import { GetWalletUseCase } from "./application/use-cases/get-wallet.use-case";
 
 @Module({
   controllers: [WalletsController, BetEventsController],
@@ -16,6 +17,7 @@ import { AuthModule } from "./infrastructure/auth/auth.module";
     ProcessBetPlacedUseCase,
     ProcessBetWonUseCase,
     CreateWalletUseCase,
+    GetWalletUseCase,
   ],
 })
 export class AppModule {}

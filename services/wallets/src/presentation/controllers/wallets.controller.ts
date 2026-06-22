@@ -7,10 +7,14 @@ import {
   CurrentUser,
   JwtAuthGuard,
 } from "@crash/auth-kit";
+import { GetWalletUseCase } from "../../application/use-cases/get-wallet.use-case";
 
 @Controller()
 export class WalletsController {
-  constructor(private readonly createWalletUseCase: CreateWalletUseCase) {}
+  constructor(
+    private readonly createWalletUseCase: CreateWalletUseCase,
+    private readonly getWalletUseCase: GetWalletUseCase,
+  ) {}
 
   @Get("health")
   check(): HealthCheckResponseDto {
@@ -25,6 +29,19 @@ export class WalletsController {
     const wallet = await this.createWalletUseCase.execute({
       playerId: user.userId,
     });
+
+    return {
+      id: wallet.id,
+      playerId: wallet.playerId,
+      balance: Number(wallet.balance.valueInCents),
+    };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  async getMyWallet(
+    @CurrentUser() user: AuthenticatedUser,
+  ): Promise<WalletResponseDto> {
+    const wallet = await this.getWalletUseCase.execute(user.userId);
 
     return {
       id: wallet.id,
