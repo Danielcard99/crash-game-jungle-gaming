@@ -17,6 +17,16 @@ const PHASE_MAP: Record<string, RoundPhase> = {
   SETTLED: "idle",
 };
 
+interface SeedHistory {
+  roundId?: string;
+  serverSeed: string;
+  serverSeedHash: string;
+  crashPoint: Multiplier;
+  clientSeed?: string;
+  nonce?: number;
+  hmac?: string;
+}
+
 interface GameStore {
   phase: RoundPhase;
   roundId: string | null;
@@ -29,6 +39,8 @@ interface GameStore {
   liveBets: LiveBet[];
   myActiveBet: { amount: Cents; autoCashout: Multiplier | null } | null;
   socketConnected: boolean;
+  seedHistory: SeedHistory[];
+  autoCashoutEnabled: boolean;
 
   initFromRound: (round: Round) => void;
   setBetting: (roundId: string, bettingEndsAt: string, serverSeedHash: string) => void;
@@ -40,6 +52,7 @@ interface GameStore {
   setMyActiveBet: (amount: Cents, autoCashout: Multiplier | null) => void;
   clearMyActiveBet: () => void;
   setSocketConnected: (connected: boolean) => void;
+  setAutoCashoutEnabled: (enabled: boolean) => void;
 }
 
 export const useGameStore = create<GameStore>()((set) => ({
@@ -54,6 +67,8 @@ export const useGameStore = create<GameStore>()((set) => ({
   liveBets: [],
   myActiveBet: null,
   socketConnected: true,
+  seedHistory: [],
+  autoCashoutEnabled: false,
 
   initFromRound: (round) =>
     set({
@@ -96,6 +111,10 @@ export const useGameStore = create<GameStore>()((set) => ({
       phase: "crashed",
       crashPoint,
       crashSeeds: { serverSeed, serverSeedHash },
+      seedHistory: [
+        { serverSeed, serverSeedHash, crashPoint },
+        ...state.seedHistory,
+      ].slice(0, 20),
       liveBets: state.liveBets.map((b) =>
         b.status === "pending" ? { ...b, status: "lost" as const } : b,
       ),
@@ -115,4 +134,6 @@ export const useGameStore = create<GameStore>()((set) => ({
   clearMyActiveBet: () => set({ myActiveBet: null }),
 
   setSocketConnected: (connected) => set({ socketConnected: connected }),
+
+  setAutoCashoutEnabled: (enabled) => set({ autoCashoutEnabled: enabled }),
 }));
