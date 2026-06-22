@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Query,
+  UseGuards,
+} from "@nestjs/common";
 import { HealthCheckResponseDto } from "../dtos/health-check-response.dto";
 import {
   type AuthenticatedUser,
@@ -19,8 +27,9 @@ import { RoundHistoryResponseDto } from "../dtos/round-history-response.dto";
 import { GetRoundHistoryUseCase } from "../../application/use-cases/get-round-history.use-case";
 import { RoundVerifyResponseDto } from "../dtos/round-verify-response.dto";
 import { VerifyRoundUseCase } from "../../application/use-cases/verify-round.use-case";
+import { RoundHistoryQueryDto } from "../dtos/round-history-query.dto";
 
-@Controller('games')
+@Controller("games")
 export class GamesController {
   constructor(
     private readonly placeBetUseCase: PlaceBetUseCase,
@@ -109,8 +118,10 @@ export class GamesController {
   }
 
   @Get("rounds/history")
-  async getRoundHistory(): Promise<RoundHistoryResponseDto[]> {
-    const rounds = await this.getRoundHistoryUseCase.execute();
+  async getRoundHistory(
+    @Query() query: RoundHistoryQueryDto,
+  ): Promise<RoundHistoryResponseDto[]> {
+    const rounds = await this.getRoundHistoryUseCase.execute(query.limit);
 
     return rounds.map((round) => ({
       id: round.id,

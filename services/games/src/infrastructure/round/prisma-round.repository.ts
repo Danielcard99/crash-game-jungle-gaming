@@ -56,7 +56,7 @@ export class PrismaRoundRepository implements RoundRepository {
     const rounds = await this.prisma.round.findMany({
       where: { status: "SETTLED" },
       orderBy: { createdAt: "desc" },
-      take: limit,
+      take: Number(limit),
     });
     return rounds.map((round) => RoundMapper.toDomain(round));
   }

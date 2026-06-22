@@ -11,7 +11,7 @@ export class GetRoundHistoryUseCase {
     @Inject(ROUND_REPOSITORY) private readonly roundRepository: RoundRepository,
   ) {}
 
-  async execute(): Promise<Round[]> {
-    return this.roundRepository.findSettledRounds(50);
+  async execute(limit: number = 50): Promise<Round[]> {
+    return this.roundRepository.findSettledRounds(limit);
   }
 }
