@@ -9,6 +9,7 @@ export function useWallet() {
     queryKey: ["wallet"],
     queryFn: () => api.get<Wallet>("/wallets/me"),
     enabled: isAuthenticated,
-    staleTime: 30_000,
+    staleTime: 0,
+    refetchInterval: 3_000,
   });
 }

@@ -41,8 +41,10 @@ interface GameStore {
   socketConnected: boolean;
   seedHistory: SeedHistory[];
   autoCashoutEnabled: boolean;
+  soundEnabled: boolean;
 
   initFromRound: (round: Round) => void;
+  toggleSound: () => void;
   setBetting: (roundId: string, bettingEndsAt: string, serverSeedHash: string) => void;
   setStarted: (roundId: string) => void;
   setMultiplier: (multiplier: Multiplier) => void;
@@ -69,6 +71,7 @@ export const useGameStore = create<GameStore>()((set) => ({
   socketConnected: true,
   seedHistory: [],
   autoCashoutEnabled: false,
+  soundEnabled: true,
 
   initFromRound: (round) =>
     set({
@@ -136,4 +139,5 @@ export const useGameStore = create<GameStore>()((set) => ({
   setSocketConnected: (connected) => set({ socketConnected: connected }),
 
   setAutoCashoutEnabled: (enabled) => set({ autoCashoutEnabled: enabled }),
+  toggleSound: () => set((state) => ({ soundEnabled: !state.soundEnabled })),
 }));

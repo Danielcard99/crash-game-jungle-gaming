@@ -12,7 +12,6 @@ function getManager(): UserManager {
       post_logout_redirect_uri: `${window.location.origin}/login`,
       response_type: "code",
       scope: "openid profile email",
-      pkce_method: "S256",
       automaticSilentRenew: true,
       userStore: new WebStorageStateStore({ store: localStorage }),
     });

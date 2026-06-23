@@ -5,6 +5,7 @@ import { getSocket } from "@/lib/socket";
 import { useGameStore } from "@/stores/game.store";
 import { useAuthStore } from "@/stores/auth.store";
 import { formatCurrency, formatMultiplier } from "@/lib/format";
+import { useSound } from "@/hooks/use-sound";
 import type {
   WsRoundBetting,
   WsRoundStarted,
@@ -25,6 +26,7 @@ const EV = {
 
 export function useGameSocket() {
   const queryClient = useQueryClient();
+  const { playCrash, playRoundStart } = useSound();
 
   useEffect(() => {
     const socket = getSocket();
@@ -50,6 +52,7 @@ export function useGameSocket() {
 
     socket.on(EV.ROUND_STARTED, (data: WsRoundStarted) => {
       useGameStore.getState().setStarted(data.roundId);
+      playRoundStart();
     });
 
     socket.on(EV.ROUND_TICK, (data: WsRoundTick) => {
@@ -60,6 +63,7 @@ export function useGameSocket() {
       const store = useGameStore.getState();
       const hadActiveBet = store.myActiveBet !== null;
       store.setCrashed(data.crashPoint, data.serverSeed, data.serverSeedHash, data.clientSeed, data.nonce);
+      playCrash();
       if (hadActiveBet) {
         store.clearMyActiveBet();
         queryClient.invalidateQueries({ queryKey: ["wallet"] });
@@ -99,5 +103,5 @@ export function useGameSocket() {
       socket.io.off("reconnect_failed", onReconnectFailed);
       Object.values(EV).forEach((ev) => socket.off(ev));
     };
-  }, [queryClient]);
+  }, [queryClient, playCrash, playRoundStart]);
 }
