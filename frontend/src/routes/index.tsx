@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { toast } from "sonner";
+import { Volume2, VolumeX } from "lucide-react";
 import { useGameStore } from "@/stores/game.store";
 import { useAuthStore } from "@/stores/auth.store";
 import { useCurrentRound } from "@/hooks/use-current-round";
@@ -36,6 +37,8 @@ function Index() {
   const { isError: roundError } = useCurrentRound();
 
   const socketConnected = useGameStore((s) => s.socketConnected);
+  const soundEnabled = useGameStore((s) => s.soundEnabled);
+  const toggleSound = useGameStore((s) => s.toggleSound);
   const authState = useAuthStore();
   const { data: wallet } = useWallet();
   const { data: historyData, isError: historyError } = useRoundHistory(20);
@@ -74,6 +77,14 @@ function Index() {
                     </span>
                   </div>
                 </div>
+                <button
+                  type="button"
+                  onClick={toggleSound}
+                  title={soundEnabled ? "Mute" : "Unmute"}
+                  className="cursor-pointer rounded-lg border border-border bg-card p-2 text-muted-foreground transition hover:text-foreground"
+                >
+                  {soundEnabled ? <Volume2 size={16} /> : <VolumeX size={16} />}
+                </button>
                 <button
                   type="button"
                   onClick={handleLogout}
