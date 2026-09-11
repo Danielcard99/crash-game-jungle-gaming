@@ -1,0 +1,27 @@
+node_modules
+**/node_modules
+
+.git
+.gitignore
+
+# Build artifacts
+dist
+**/dist
+**/generated
+
+# Tests
+tests/
+**/*.test.ts
+**/*.spec.ts
+
+# Env files
+.env
+.env.*
+
+# Docs
+README.md
+**/*.md
+
+# Editor
+.vscode
+.idea
