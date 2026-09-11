@@ -53,11 +53,26 @@ bun run docker:prune   # Remove tudo (containers, volumes, imagens)
 
 ## Testes
 
+### Setup
+
+O `prisma generate` precisa de um `DATABASE_URL` válido (mesmo sem um banco rodando, para os testes unitários). Rode uma vez antes de testar localmente:
+
+```bash
+bun run setup   # cria services/games/.env e services/wallets/.env a partir dos .env.example
+```
+
 ### Unitários
 
 ```bash
-cd services/games && bun test tests/unit
-cd services/wallets && bun test tests/unit
+bun run test              # roda prisma generate + testes unitários dos dois serviços
+bun run test:coverage     # idem, com cobertura
+```
+
+Ou individualmente:
+
+```bash
+cd services/games && bunx prisma generate && bun test tests/unit
+cd services/wallets && bunx prisma generate && bun test tests/unit
 ```
 
 ### E2E
